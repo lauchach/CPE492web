@@ -5,7 +5,7 @@ import 'popper.js'
 import 'bootstrap'
 import './assets/app.scss'
 import jQuery from 'jquery'
-import '../dist/css/style.css'
+// import '../dist/css/style.css'
 
 window.$ = window.jQuery = jQuery
 
