@@ -43,36 +43,39 @@ export default {
   data () {
     return {
       email: JSON.parse(localStorage.getItem('userData')).student_mail,
-      name: JSON.parse(localStorage.getItem('userData')).student_name,
-      rsuid: JSON.parse(localStorage.getItem('userData')).rsuid,
-      nname: JSON.parse(localStorage.getItem('userData')).student_n_name,
-      tel: JSON.parse(localStorage.getItem('userData')).student_tel,
-      highschool: JSON.parse(localStorage.getItem('userData')).student_highschool,
-      major: JSON.parse(localStorage.getItem('userData')).student_major,
-      cgpa: JSON.parse(localStorage.getItem('userData')).student_gpa
+      name: '',
+      rsuid: '',
+      nname: '',
+      tel: '',
+      highschool: '',
+      major: '',
+      cgpa: ''
     }
   },
   created () {
-    console.log('email ', this.rsuid)
+    console.log('email', this.email)
+    this.setData()
   },
   methods: {
     addDataProfile () {
-      console.log(this.email)
+      console.log('this.email:', this.email)
       const db = fb.firestore()
       db.collection('MEMBER_TABLE').where('student_mail', '==', this.email).get().then(Show => {
         Show.forEach(doc => {
           console.log(doc.id, '=>', doc.data())
           console.log(doc.id)
-          // var fileid = doc.id
           var flieid = db.collection('MEMBER_TABLE').doc(doc.id)
           flieid.update({
-            student_n_name: this.nname,
-            student_name: this.name,
             rsuid: this.rsuid,
-            student_tel: this.tel,
-            student_highschool: this.highschool,
-            student_major: this.major,
-            student_gpa: this.cgpa
+            studentData: {
+              student_n_name: this.nname,
+              student_name: this.name,
+              rsuid: this.rsuid,
+              student_tel: this.tel,
+              student_highschool: this.highschool,
+              student_major: this.major,
+              student_gpa: this.cgpa
+            }
           })
           alert('สำเร็จ')
         })
@@ -85,6 +88,24 @@ export default {
         highschool: '',
         major: '',
         cgpa: ''
+      }
+    },
+    setData () {
+      if (JSON.parse(localStorage.getItem('userData')).studentData.student_name !== '' &&
+        JSON.parse(localStorage.getItem('userData')).studentData.rsuid !== '' &&
+        JSON.parse(localStorage.getItem('userData')).studentData.student_n_name !== '' &&
+        JSON.parse(localStorage.getItem('userData')).studentData.student_tel !== '' &&
+        JSON.parse(localStorage.getItem('userData')).studentData.student_highschool !== '' &&
+        JSON.parse(localStorage.getItem('userData')).studentData.student_major !== '' &&
+        JSON.parse(localStorage.getItem('userData')).studentData.student_gpa !== ''
+      ) {
+        this.name = JSON.parse(localStorage.getItem('userData')).studentData.student_name
+        this.rsuid = JSON.parse(localStorage.getItem('userData')).studentData.rsuid
+        this.nname = JSON.parse(localStorage.getItem('userData')).studentData.student_n_name
+        this.tel = JSON.parse(localStorage.getItem('userData')).studentData.student_tel
+        this.highschool = JSON.parse(localStorage.getItem('userData')).studentData.student_highschool
+        this.major = JSON.parse(localStorage.getItem('userData')).studentData.student_major
+        this.cgpa = JSON.parse(localStorage.getItem('userData')).studentData.student_gpa
       }
     }
   }

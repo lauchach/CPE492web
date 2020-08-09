@@ -29,38 +29,28 @@
                 <th>เกรด</th>
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="(item, i) in tagitem" :key="i">
-                <td v-if="item.loopSubjectId.length">
-                  <div class="form-group">
-                    <label for="exampleFormControlSelect1">Example select</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+            <tbody v-for="(item, i) in tagitem" :key="i">
+              <tr v-if="data.length === i">
+                <td v-if="loopSubjectId && (subjectRequt + 1) % 2 === 0">
+                    <div class="form-group">
+                    <select class="form-control" v-model="subjectid" id="subjectid">
                       <option v-for="(list, i) in item.loopSubjectId" :key="i">{{list}}</option>
                     </select>
                   </div>
-                  <div class="dropdown">
-                    <button
-                      class="btn btn-default dropdown-toggle"
-                      type="button"
-                      id="menu1"
-                      data-toggle="dropdown"
-                    >
-                      <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
-                      <li v-for="(list, i) in item.loopSubjectId" :key="i">{{list}}</li>
-                    </ul>
-                  </div>
                 </td>
-                <td v-if="tagitem.length - 1 === i"><input type="text-on-table-ids" v-model="subjectid" placeholder="3000-XXXX"></td>
-                <!-- <td v-else-if="a"><input type="text-on-table-ids" v-model="item.subjectid" placeholder="3000-XXXX"></td> -->
+                <td v-else-if="i === data.length">
+                  <input type="text-on-table-ids" v-model="subjectid" placeholder="3000-XXXX">
+                </td>
+                <td v-else v-for="(item, i) in data" :key="i">
+                  {{data}}
+                </td>
                 <td>
                   <button class="btnmapping" @click="mapping">ตรวจสอบ</button>
                 </td>
                 <td>{{item.subjectName}}</td>
                 <td>{{item.subjectCredit}}</td>
                 <td>
-                  <select id="txt_r_state" name="g_yearTerm" class="form-control">
+                  <select id="txt_r_state" v-model="subjectGrade" class="form-control">
                     <option selected>เกรด</option>
                     <option value="1">1</option>
                     <option value="1.5">1.5</option>
@@ -73,9 +63,19 @@
                 </td>
                 <td>{{item.subjectRSUid}}</td>
                 <td>{{item.subjectRSUname}}</td>
-            <td v-if="Number(item.subjectCredit) === 1 || Number(item.subjectCredit) === 2" :rowspan="2">{{item.subjectRSUCredit}}</td>
-            <td v-else :rowspan="1">{{item.subjectRSUCredit}}</td>
-                <td :rowspan="3">{{item.subjectRSUCredit}}</td>
+                <td v-if="Number(item.subjectCredit) === 2" :rowspan="2">{{item.subjectRSUCredit}}</td>
+                <td v-else :rowspan="1">{{item.subjectRSUCredit}}</td>
+                <td></td>
+              </tr>
+              <tr v-else>
+                <td>{{item.subjectid}}</td>
+                <td></td>
+                <td>{{item.subjectName}}</td>
+                <td>{{item.subjectCredit}}</td>
+                <td>{{item.subjectGrade}}</td>
+                <td>{{item.subjectRSUid}}</td>
+                <td>{{item.subjectRSUname}}</td>
+                <td>{{item.subjectRSUCredit}}</td>
               </tr>
             </tbody>
             <button class="btnmapping" @click="pushrow">+</button>
@@ -85,9 +85,12 @@
       </div>
     </div>
     <div>
+            <li >
+              <router-link to="/prints" class="nav-link">print</router-link>
+            </li>
       <button @click="addRow()">Add</button>
       <button @click="saveData()">Save</button>
-      <div v-for="(item, i) in data" :key="i">
+      <div v-for="(item, i) in record" :key="i">
         {{item.name}}
       </div>
     </div>
@@ -101,17 +104,13 @@ export default {
   components: {},
   data () {
     return {
-      data: [
-        {
-          id: '1234',
-          name: 0
-        }
-      ],
+      data: [],
       counter: 1,
       rsuid: JSON.parse(localStorage.getItem('userData')).rsuid,
       subjectid: '',
       subjectName: '',
       subjectCredit: '',
+      subjectGrade: '',
       subjectRSUid: '',
       subjectRSUname: '',
       subjectRSUCredit: '',
@@ -126,11 +125,12 @@ export default {
           subjectRSUCredit: '',
           loopSubjectId: []
         }
-      ]
+      ],
+      subjectRequt: 0
     }
   },
   methods: {
-    addRow () {
+    addRow () { 
       let modelData = {
         id: '',
         name: this.counter++
@@ -168,7 +168,8 @@ export default {
               console.log('doc.data:', doc.data())
               this.subjectName = doc.data().Subject_Name
               this.subjectCredit = doc.data().Subject_Credit
-              if (this.subjectCredit === this.subjectRSUid) {
+              console.log('this.subjectCredit', this.subjectCredit, '===', 'this.subjectRSUid', this.subjectRSUCredit)
+              if (this.subjectCredit === this.subjectRSUCredit) {
                 console.log('if')
                 this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
                 this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
@@ -181,30 +182,38 @@ export default {
                 console.log('else')
                 alert('else')
                 this.loopSubjectId = this.subjectid
-                this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
-                this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
-                this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
-                this.tagitem[this.tagitem.length - 1].subjectRSUid = this.subjectRSUid
-                this.tagitem[this.tagitem.length - 1].subjectRSUname = this.subjectRSUname
-                this.tagitem[this.tagitem.length - 1].subjectRSUCredit = this.subjectRSUCredit
-                this.tagitem[this.tagitem.length - 1].loopSubjectId = []
-                // console.log(this.tagitem)
-                this.tagitem.push({
-                  // subjectid: '',
-                  subjectName: '',
-                  subjectCredit: '',
-                  subjectRSUid: '',
-                  subjectRSUname: '',
-                  subjectRSUCredit: '',
-                  loopSubjectId: []
-                })
-                const db = fb.firestore()
-                db.collection('MAPPIN_TABLE').where('subject2plus1', 'array-contains', this.loopSubjectId).get().then(Show => {
-                  Show.forEach(doc => {
-                    this.tagitem[this.tagitem.length - 1].loopSubjectId = doc.data().subject2plus1
-                  })
-                })
-                console.log('tagitem', this.tagitem)
+                console.log('this.loopSubjectId', this.loopSubjectId)
+                if (this.tagitem[this.tagitem.length - 1].subjectRSUid !== this.subjectRSUid) {
+                  console.log('if')
+                  this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
+                  this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
+                  this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
+                  this.tagitem[this.tagitem.length - 1].subjectRSUid = this.subjectRSUid
+                  this.tagitem[this.tagitem.length - 1].subjectRSUname = this.subjectRSUname
+                  this.tagitem[this.tagitem.length - 1].subjectRSUCredit = this.subjectRSUCredit
+                  this.tagitem[this.tagitem.length - 1].loopSubjectId = []
+                  this.pushrow()
+                  if ((this.subjectRequt) % 2 === 0) {
+                    const db = fb.firestore()
+                    db.collection('MAPPIN_TABLE').where('subject2plus1', 'array-contains', this.loopSubjectId).get().then(Show => {
+                      Show.forEach(doc => {
+                        this.tagitem[this.tagitem.length - 1].loopSubjectId = doc.data().subject2plus1
+                      })
+                    })
+                  }
+                  this.subjectRequt = this.subjectRequt + 1
+                  console.log('tagitem>>>>', this.tagitem)
+                } else {
+                  console.log('elseelse')
+                  this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
+                  this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
+                  this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
+                  this.tagitem[this.tagitem.length - 1].subjectRSUid = this.subjectRSUid
+                  this.tagitem[this.tagitem.length - 1].subjectRSUname = this.subjectRSUname
+                  this.tagitem[this.tagitem.length - 1].subjectRSUCredit = this.subjectRSUCredit
+                  this.tagitem[this.tagitem.length - 1].loopSubjectId = []
+                  this.subjectRequt = false
+                }
               }
             })
           })
@@ -212,13 +221,34 @@ export default {
     },
     save () {
       console.log('save')
+      const db = fb.firestore()
+      db.collection('RECORD_TABLE').add({
+        [this.rsuid]: this.data
+      })
+    // console.log(true)
     },
     pushrow () {
-      this.subjectid = ''
-      this.tagitem.push({
-        subjectName: '',
-        loopSubjectId: []
-      })
+      if (this.tagitem) {
+        console.log('tagitem', this.tagitem)
+        let _data = { [this.subjectRSUid]: {
+          subjectid: this.subjectid,
+          subjectName: this.subjectName,
+          subjectGrade: this.subjectGrade,
+          subjectCredit: this.subjectCredit,
+          subjectRSUid: this.subjectRSUid,
+          subjectRSUname: this.subjectRSUname,
+          subjectRSUCredit: this.subjectRSUCredit
+        }
+        }
+        this.tagitem[this.tagitem.length - 1].subjectGrade = this.subjectGrade
+        this.data.push(_data)
+        console.log('this.data>>:', this.data)
+        this.subjectid = ''
+        this.tagitem.push({
+          subjectName: '',
+          loopSubjectId: []
+        })
+      }
     }
   }
 }

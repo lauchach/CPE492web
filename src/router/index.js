@@ -8,6 +8,7 @@ import Overview from '../views/views_admin/Overview.vue'
 import Subjectmap from '../views/views_admin/Subjectmap.vue'
 import AllProfile from '../views/views_admin/AllProfile.vue'
 import Newrecord from '../views/views_admin/Newrecord.vue'
+import prints from '..//views/views_user/prints.vue'
 // User
 import Profileviews from '../views/Profileviews.vue'
 
@@ -55,6 +56,11 @@ const routes = [
     path: '/Transfer',
     name: 'Transfer',
     component: Transfer
+  },
+  {
+    path: '/prints',
+    name: 'prints',
+    component: prints
   },
   {
     path: '/about',

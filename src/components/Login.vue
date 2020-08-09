@@ -5,7 +5,7 @@
         <div class="modal-dialog modal-dialog-centered"  role="document">
             <div class="modal-content">
                 <div class="modal-body">
-                        <ul class="nav nav-fill nav-pills mb-3" id="pills-tab" role="tablist">
+                        <ul class="nav nav-fill nav-pills mb-5" id="pills-tab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-login" role="tab" aria-controls="pills-login" aria-selected="true">Login</a>
                             </li>
@@ -71,7 +71,7 @@ export default {
       fb.auth().signInWithEmailAndPassword(this.email, this.password)
         .then((email) => {
           const db = fb.firestore()
-          db.collection('MEMBER_TABLE').where('student_mail', '==', email.user.email).get().then(userShow => {
+          db.collection('MEMBER_TABLE').where('student_mail', '==', this.email).get().then(userShow => {
             userShow.forEach(doc => {
               console.log(doc.id, '=>', doc.data())
               _data = doc.data()
@@ -80,10 +80,14 @@ export default {
             localStorage.setItem('userData', JSON.stringify(_data))
             let res = JSON.parse(localStorage.getItem('userData'))
             console.log('res ', res)
-            if (res.type === 'ADMIN') {
-              this.$router.replace('admin')
+            if (res.type) {
+              if (res.type === 'ADMIN') {
+                this.$router.replace('admin')
+              } else if (res.type === 'user') {
+                this.$router.replace('Profileviews')
+              }
             } else {
-              this.$router.replace('Profileviews')
+              alert('มรบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง')
             }
           })
         })
@@ -103,9 +107,10 @@ export default {
       fb.auth().createUserWithEmailAndPassword(this.email, this.password)
         .then((email) => {
           const db = fb.firestore()
-          db.collection('MEMBER_TABLE').add({
+          db.collection('MEMBER_TABLE').doc(this.email).set({
             student_mail: this.email,
-            type: 'user'
+            type: 'user',
+            status: 0
           })
           console.log('ทำadd db')
           alert('สำเร็จ')
