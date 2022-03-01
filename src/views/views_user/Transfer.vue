@@ -96,6 +96,7 @@ export default {
       data: [],
       counter: 1,
       rsuid: JSON.parse(localStorage.getItem('userData')).rsuid,
+      rsuEmail: JSON.parse(localStorage.getItem('userData')).student_mail,
       status: '',
       subjectid: '',
       subjectName: '',
@@ -129,10 +130,13 @@ export default {
   },
   methods: {
     findRecord () {
+      console.log('this.rsuEmail', this.rsuEmail)
+      console.log('this.status', this.status)
       this.db.collection('RECORD_TABLE')
         .where('student', '==', this.rsuid).get()
         .then(Show => {
           Show.forEach(doc => {
+            console.log('findRecord doc =>', doc.id)
             if (doc.id) {
               this.haveRecord = true
             }
@@ -148,6 +152,7 @@ export default {
         .then(Show => {
           Show.forEach(doc => {
             if (doc.id) {
+              console.log('doc.data().status', doc.data().status)
               this.status = doc.data().status
             }
           })
@@ -193,6 +198,15 @@ export default {
       this.db.collection('RECORD_TABLE').doc(this.rsuid).set({
         subjectData: this.data,
         student: this.rsuid
+      })
+        .then(function () {
+          console.log('Document successfully written!')
+        })
+        .catch(function (error) {
+          console.error('Error writing document: ', error)
+        })
+      this.db.collection('MEMBER_TABLE').doc(this.rsuEmail).update({
+        status: 1
       })
         .then(function () {
           console.log('Document successfully written!')

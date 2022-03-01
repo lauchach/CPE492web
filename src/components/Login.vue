@@ -66,7 +66,6 @@ export default {
   },
   methods: {
     login () {
-      console.log('auth pass')
       let _data = {}
       fb.auth().signInWithEmailAndPassword(this.email, this.password)
         .then((email) => {
@@ -76,18 +75,18 @@ export default {
               console.log(doc.id, '=>', doc.data())
               _data = doc.data()
             })
-            console.log('_data ', _data)
             localStorage.setItem('userData', JSON.stringify(_data))
             let res = JSON.parse(localStorage.getItem('userData'))
-            console.log('res ', res)
+            console.log('auth pass res', res)
             if (res.type) {
-              if (res.type === 'ADMIN') {
+              if (res.type === 'admin') {
                 this.$router.replace('admin')
-              } else if (res.type === 'user') {
+              } else if (res.type === 'user' || res.type === 'student') {
+                console.log('85>>')
                 this.$router.replace('Profileviews')
               }
             } else {
-              alert('มรบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง')
+              alert('มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง')
             }
           })
         })

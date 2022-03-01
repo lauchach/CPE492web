@@ -43,7 +43,7 @@
                             <router-link to="/admin/overview">
                             <!-- <router-link :to="{path: '/admin/overview'}"> -->
                                 <i class="fa fa-chart-line"></i>
-                                <span>(Overview)รายการเทียบโอนทั้งหมด</span>
+                                <span>รายการเทียบโอนทั้งหมด</span>
                             </router-link>
                         </li>
                         <li>
@@ -62,7 +62,7 @@
                         <li>
                             <router-link to="/admin/Allprofile">
                                 <i class="fa fa-user"></i>
-                                <span>จัดการ Profile</span>
+                                <span>จัดการบัญชีผู้ใช้</span>
                             </router-link>
                         </li>
                         <li>

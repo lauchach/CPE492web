@@ -20,11 +20,14 @@
               <router-link to="/Transfer" class="nav-link" href="#">ระบบเทียบโอน</router-link>
             </li>
           </ul>
-          <form class="form-inline my-2 my-lg-0">
+          <form v-if="!rsuid" class="form-inline my-2 my-lg-0">
             <a class="btn btn-outline-success my-2 my-sm-0" data-toggle="modal" data-target="#login">Login</a>
             <a class="btn btn-outline-info border-0 mx-2 my-2 my-sm-0" data-toggle="modal" data-target="#miniCart">
               <i class="fas fa-cart-plus"></i>
             </a>
+          </form>
+            <form v-else class="form-inline my-2 my-lg-0">
+            <button class="btn btn-outline-danger my-2 my-sm-0" @click="logout">logout</button>
           </form>
         </div>
      </div>
@@ -37,7 +40,21 @@ export default {
   props: {
     msg: String
   },
-  components: {}
+  components: {},
+  data () {
+    return {
+      data: [],
+      counter: 1,
+      rsuid: JSON.parse(localStorage.getItem('userData')).rsuid
+    }
+  },
+  methods: {
+    logout () {
+      console.log('log logout')
+      localStorage.clear()
+      this.$router.replace('/')
+    }
+  }
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->

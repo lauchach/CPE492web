@@ -97,7 +97,7 @@
 import { fb } from '../../firebase'
 // @ is an alias to /src
 export default {
-  name: 'Transfer',
+  name: 'Transfer1',
   components: {},
   data () {
     return {
