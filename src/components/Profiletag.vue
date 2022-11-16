@@ -1,9 +1,8 @@
 <template>
   <div class= "Profiletag">
     <div class="profiletaggroup">
-      <h3>Profiletag Test</h3>
           <label for="validationCustom01">ระหัสประจำตัวนักศึกษา</label>
-          <input v-model="rsuid" class="form-control" id="validationCustom01" placeholder="ยังไม่มีข้อมูล" value="Mark" required>
+          <input v-model="rsuId" class="form-control" id="validationCustom01" placeholder="ยังไม่มีข้อมูล" value="Mark" required>
         <div class="valid-feedback">
           Looks good!
         </div>
@@ -18,12 +17,13 @@
         <label for="validationCustom02">Email</label>
         <input v-model="email" class="form-control" id="validationCustom02" placeholder="ยังไม่มีข้อมูล" required>
       </div>
-      ทำงานใน
     </div>
       </div>
 </template>
 
 <script>
+import { Config } from '../config'
+import axios from 'axios'
 export default {
   name: 'Profiletag',
   props: {
@@ -33,22 +33,50 @@ export default {
   },
   data () {
     return {
-      rsuid: '',
+      rsuId: '',
       name: '',
       email: JSON.parse(localStorage.getItem('userData')).student_mail
     }
   },
   created () {
-    console.log('---> ', JSON.parse(localStorage.getItem('userData')))
+    console.log('--Profiletag-> ', JSON.parse(localStorage.getItem('userData')))
     this.setData()
   },
   methods: {
-    setData () {
-      if (JSON.parse(localStorage.getItem('userData')).rsuid !== '' &&
-          JSON.parse(localStorage.getItem('userData')).studentData.student_name !== '') {
-        this.rsuid = JSON.parse(localStorage.getItem('userData')).rsuid
-        this.name = JSON.parse(localStorage.getItem('userData')).studentData.student_name
-      }
+    // setData () {
+    //   this.rsuid = JSON.parse(localStorage.getItem('userData')).detail.rsuId || ''
+    //   this.name = JSON.parse(localStorage.getItem('userData')).studentData.student_name
+    // },
+    async setData () {
+      let uri = `${Config.APIURL}${Config.PART.GETPROFILE}`
+      axios.post(uri, {
+        email: JSON.parse(localStorage.getItem('userData')).email || ''
+      }).then(responseLogin => {
+        console.log('RESPONSE API setData', responseLogin)
+        if (responseLogin.data.status.code === 0) {
+          // localStorage.setItem('userData', JSON.stringify(responseLogin.data.data))
+          let res = responseLogin.data.data
+          console.log('auth pass res', res)
+          if (res) {
+            this.email = res.email
+            this.nname = res.detail.nname || ''
+            this.name = `${res.detail.name} ${res.detail.lastname}` || ''
+            this.lastname = res.detail.lastname || ''
+            this.rsuId = res.detail.rsuId || ''
+            this.tel = res.detail.tel || ''
+            this.highschool = res.detail.highschool || ''
+            this.major = res.detail.major || ''
+            this.gpa = res.detail.gpa || ''
+          } else {
+            alert('มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง')
+          }
+        } else {
+          alert('รหัสผิดพลาด')
+        }
+      }).catch(err => {
+        // eslint-disable-next-line no-console
+        console.log(err)
+      })
     }
   }
 }

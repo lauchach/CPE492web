@@ -10,12 +10,12 @@
         </div>
         <div class="inputtextgroup2">
           <div v-if="!haveRecord">
-            <input
+            <!-- <input
               type="text"
               v-model="rsuid"
               class="inboxput"
               placeholder="กรอกระหัสประจำตัวนักศึกษา"
-            />
+            /> -->
             <table class="transfer-table">
               <thead>
                 <tr>
@@ -87,6 +87,8 @@
 </template>
 <script>
 import { fb } from '../../firebase'
+import { Config } from '../../config'
+import axios from 'axios'
 // @ is an alias to /src
 export default {
   name: 'Transfer',
@@ -192,29 +194,33 @@ export default {
         alert('กรุณาทำการเลือกผลการเรียนก่อนทำการเพิ่มรายวิชาถัดไป')
       }
     },
-    save () {
-      console.log('save')
-      // Add a new document in collection "cities"
-      this.db.collection('RECORD_TABLE').doc(this.rsuid).set({
-        subjectData: this.data,
-        student: this.rsuid
+    async save () {
+      let uri = `${Config.APIURL}${Config.PART.LOGIN}`
+      axios.post(uri, {
+        email: this.email,
+        password: this.password
+      }).then(responseLogin => {
+        console.log('RESPONSE API LOGIN', responseLogin)
+        if (responseLogin.data.status.code === 0) {
+          localStorage.setItem('userData', JSON.stringify(responseLogin.data.data))
+          let res = responseLogin.data.data
+          console.log('auth pass res', res)
+          if (res.type) {
+            if (res.type === 'admin') {
+              this.$router.replace('admin')
+            } else if (res.type === 'user' || res.type === 'student') {
+              this.$router.replace('Profileviews')
+            }
+          } else {
+            alert('มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง')
+          }
+        } else {
+          alert('รหัสผิดพลาด')
+        }
+      }).catch(err => {
+        // eslint-disable-next-line no-console
+        console.log(err)
       })
-        .then(function () {
-          console.log('Document successfully written!')
-        })
-        .catch(function (error) {
-          console.error('Error writing document: ', error)
-        })
-      this.db.collection('MEMBER_TABLE').doc(this.rsuEmail).update({
-        status: 1
-      })
-        .then(function () {
-          console.log('Document successfully written!')
-        })
-        .catch(function (error) {
-          console.error('Error writing document: ', error)
-        })
-      alert('บันทึก สำเร็จ')
     },
     pushrow () {
       if (this.tagitem && (this.data.length !== 0)) {
@@ -268,10 +274,10 @@ export default {
               subjectid: this.subjectid,
               subjectName: this.subjectName,
               subjectGrade: this.subjectGrade,
-              subjectCredit: this.subjectCredit,
-              subjectRSUid: this.subjectRSUid,
-              subjectRSUname: this.subjectRSUname,
-              subjectRSUCredit: this.subjectRSUCredit
+              subjectCredit: this.subjectCredit
+              // subjectRSUid: this.subjectRSUid,
+              // subjectRSUname: this.subjectRSUname,
+              // subjectRSUCredit: this.subjectRSUCredit
             }
             this.tagitem[this.tagitem.length - 1].subjectGrade = this.subjectGrade
             this.data.push(_data)

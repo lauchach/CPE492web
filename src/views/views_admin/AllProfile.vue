@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-      <h3>Profile Tast</h3>
+      <!-- <h3>Profile Tast</h3> -->
       <Tablemembertable></Tablemembertable>
     </div>
 </template>
