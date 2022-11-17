@@ -1,5 +1,6 @@
 <template>
-  <div class="home">
+<div class="container">
+  <div class="profile">
       <Navbar></Navbar>
       <!-- <Hero/> -->
       <login></login>
@@ -7,7 +8,6 @@
       <Profiletag></Profiletag>
       <div class="inputtextgroup2">
         <div class="container"><h1>กรอกข้อมูล</h1></div>
-        <!-- <input type="text" id="rsuid" placeholder="กรอกระหัสประจำตัวนักศึกษา"> -->
         <input type="text" v-model="rsuId" placeholder="กรอกระหัสประจำตัวนักศึกษา">
         <input type="text" v-model="nname" placeholder="คำนำหน้าชื่อ">
         <input type="text" v-model="name" placeholder="กรอกชื่อจริง">
@@ -18,19 +18,14 @@
         <input type="text" v-model="gpa" placeholder="CGPA">
         <button class="btn1" @click="addDataProfile">เพิ่มข้อมูล</button>
       </div>
-      <!-- <products-list></products-list> -->
       <div class="container h-100">
         <div class="row p-5 h-100 justify-content-center align-items-center">
           <div class="col-md-6">
             <img src="/img/svg/1.jpg" alt="" width="400">
           </div>
-          <!-- <div class="col-md-6">
-            <input v-model="email" placeholder="edit me">
-            <h3>Profileviews test</h3>
-             <button class="btn custom-btn btn-outline-primary mr-4">Button test</button>
-          </div> -->
         </div>
       </div>
+  </div>
   </div>
   </div>
 </template>
