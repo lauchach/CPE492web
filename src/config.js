@@ -7,8 +7,10 @@ const Config = {
     PROFILEUPDATA: 'user/profile/update',
     GETPROFILE: 'user/profile/get',
     // transfer
-    TRANSFSAVE: 'transfer/user/update',
-    TRANSFFETCH: 'transfer/record/fetch'
+    TRANSFERSAVE: 'transfer/user/update',
+    TRANSFERFETCH: 'transfer/record/fetch',
+    TRANSFERRECORDLIST: 'transfer/record/list',
+    TRANSFERSUBJECT: 'transfer/subject'
   }
 }
 

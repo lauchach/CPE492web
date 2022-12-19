@@ -154,8 +154,9 @@ export default {
           let res = responseLogin.data.data
           console.log('auth pass res', res)
           if (res.type) {
-            if (res.type === 'admin') {
-              this.$router.replace('admin')
+            if (res.type === 'admin' || res.type === 'deputyDean') {
+              if (res.type === 'deputyDean') this.$router.replace('admin/overview')
+              else this.$router.replace('admin')
             } else if (res.type === 'user' || res.type === 'student') {
               this.$router.replace('Profileviews')
             }

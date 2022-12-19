@@ -148,18 +148,18 @@ export default {
   methods: {
     findRecord () {
       if (this.rsuId) {
-        let uri = `${Config.APIURL}${Config.PART.TRANSFFETCH}`
-        console.log('158', Config.PART.TRANSFFETCH, {
+        let uri = `${Config.APIURL}${Config.PART.TRANSFERFETCH}`
+        console.log('158', Config.PART.TRANSFERFETCH, {
           rsuId: this.rsuId
         })
         axios.post(uri, {
           rsuId: this.rsuId
         }).then(response => {
-          console.log('RESPONSE API TRANSFFETCH', response)
+          console.log('RESPONSE API TRANSFERFETCH', response)
           if (response.data.status.code === 0) {
             let res = response.data.data.subjects
             if (res.length) this.haveRecord = true
-            console.log('TRANSFFETCH res', res)
+            console.log('TRANSFERFETCH res', res)
             this.records = res
           } else {
             alert(`${response.data.status.message}`)
@@ -222,15 +222,15 @@ export default {
       console.log('202save')
       let data = this.data
       if (this.haveRecord) data = [...this.data, ...this.records]
-      let uri = `${Config.APIURL}${Config.PART.TRANSFSAVE}`
+      let uri = `${Config.APIURL}${Config.PART.TRANSFERSAVE}`
       axios.post(uri, {
         email: this.email,
         data: data
       }).then(responseLogin => {
-        console.log('TRANSFSAVE', responseLogin)
+        console.log('TRANSFERSAVE', responseLogin)
         if (responseLogin.data.status.code === 0) {
           let res = responseLogin.data.data
-          console.log('TRANSFSAVE res', res)
+          console.log('TRANSFERSAVE res', res)
           alert('ดำเนินการสำเร็จ')
         } else {
           alert(responseLogin.data.status.message)
