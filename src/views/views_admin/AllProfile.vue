@@ -201,7 +201,6 @@ export default {
       axios.post(uri, data).then(response => {
         console.log('RESPONSE API LOGIN', response)
         if (response.data.status.code === 0) {
-          localStorage.setItem('userData', JSON.stringify(response.data.data))
           let res = response.data.data
           console.log('responseRegister res', res)
           alert(`${response.data.status.message}`)

@@ -9,14 +9,29 @@
           <h1>กรอกข้อมูลเทียบโอน</h1>
         </div>
         <div class="inputtextgroup2">
-          <div v-if="!haveRecord">
-            <!-- <input
-              type="text"
-              v-model="rsuid"
-              class="inboxput"
-              placeholder="กรอกระหัสประจำตัวนักศึกษา"
-            /> -->
+          <div v-if="haveRecord">
             <table class="transfer-table">
+              <thead>
+                <tr>
+                  <th>รหัสวิชา</th>
+                  <th>ปุ่ม</th>
+                  <th>ชื่อวิชา</th>
+                  <th>หน่วยกิต</th>
+                  <th>เกรด</th>
+                </tr>
+              </thead>
+              <tbody v-for="(item, i) in records" :key="i">
+                <tr>
+                  <td>{{item.subjectid}}</td>
+                  <td><button class="btn btn-danger" @click="deleteRow(i, true)">ลบ</button></td>
+                  <td>{{item.subjectName}}</td>
+                  <td>{{item.subjectCredit}}</td>
+                  <td>{{item.subjectGrade}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+              <table class="transfer-table">
               <thead>
                 <tr>
                   <th>รหัสวิชา</th>
@@ -58,7 +73,7 @@
                 </tr>
                 <tr v-else>
                   <td>{{item.subjectid}}</td>
-                  <td></td>
+                  <td><button class="btn btn-danger" @click="deleteRow(i, false)">ลบ</button></td>
                   <td>{{item.subjectName}}</td>
                   <td>{{item.subjectCredit}}</td>
                   <td>{{item.subjectGrade}}</td>
@@ -67,7 +82,6 @@
               <button class="btnmapping" @click="pushrow">+</button>
             </table>
             <button class="btn btn-primary" @click="save">บันทึก</button>
-          </div>
           <div v-if="this.status === 1">
             <img src="../../../dist/img/svg/waiting.jpg" alt="" width="700">
           </div>
@@ -97,8 +111,8 @@ export default {
     return {
       data: [],
       counter: 1,
-      rsuid: JSON.parse(localStorage.getItem('userData')).rsuid,
-      rsuEmail: JSON.parse(localStorage.getItem('userData')).student_mail,
+      rsuId: JSON.parse(localStorage.getItem('userData')).detail.rsuId,
+      email: JSON.parse(localStorage.getItem('userData')).email,
       status: '',
       subjectid: '',
       subjectName: '',
@@ -108,6 +122,7 @@ export default {
       subjectRSUname: '',
       subjectRSUCredit: '',
       loopSubjectId: '',
+      records: [],
       tagitem: [
         {
           subjectid: '',
@@ -127,41 +142,50 @@ export default {
     }
   },
   async created () {
-    await this.findRecord()
     await this.findStatus()
+    await this.findRecord()
   },
   methods: {
     findRecord () {
-      console.log('this.rsuEmail', this.rsuEmail)
-      console.log('this.status', this.status)
-      this.db.collection('RECORD_TABLE')
-        .where('student', '==', this.rsuid).get()
-        .then(Show => {
-          Show.forEach(doc => {
-            console.log('findRecord doc =>', doc.id)
-            if (doc.id) {
-              this.haveRecord = true
-            }
-          })
+      if (this.rsuId) {
+        let uri = `${Config.APIURL}${Config.PART.TRANSFFETCH}`
+        console.log('158', Config.PART.TRANSFFETCH, {
+          rsuId: this.rsuId
         })
-        .catch(function (error) {
-          console.log('Error getting documents: ', error)
+        axios.post(uri, {
+          rsuId: this.rsuId
+        }).then(response => {
+          console.log('RESPONSE API TRANSFFETCH', response)
+          if (response.data.status.code === 0) {
+            let res = response.data.data.subjects
+            if (res.length) this.haveRecord = true
+            console.log('TRANSFFETCH res', res)
+            this.records = res
+          } else {
+            alert(`${response.data.status.message}`)
+          }
+        }).catch(err => {
+          console.log(err)
         })
+      }
     },
     findStatus () {
-      this.db.collection('MEMBER_TABLE')
-        .where('rsuid', '==', this.rsuid).get()
-        .then(Show => {
-          Show.forEach(doc => {
-            if (doc.id) {
-              console.log('doc.data().status', doc.data().status)
-              this.status = doc.data().status
-            }
+      if (this.rsuId) {
+        console.log('175', this.rsuId)
+        this.db.collection('MEMBER_TABLE')
+          .where('rsuid', '==', this.rsuId).get()
+          .then(Show => {
+            Show.forEach(doc => {
+              if (doc.id) {
+                console.log('doc.data().status', doc.data().status)
+                this.status = doc.data().status
+              }
+            })
           })
-        })
-        .catch(function (error) {
-          console.log('Error getting documents: ', error)
-        })
+          .catch(function (error) {
+            console.log('Error getting documents: ', error)
+          })
+      }
     },
     // addRow () {
     //   let modelData = {
@@ -186,36 +210,30 @@ export default {
                 this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
                 this.tagitem[this.tagitem.length - 1].loopSubjectId = []
               } else {
-                console.log('else')
+                console.log('213 else')
               }
             })
           })
       } else {
-        alert('กรุณาทำการเลือกผลการเรียนก่อนทำการเพิ่มรายวิชาถัดไป')
+        alert('กรุณาทำการกรอกรหัสรายวิชาก่อนกดปุ่มตรวจสอบ')
       }
     },
     async save () {
-      let uri = `${Config.APIURL}${Config.PART.LOGIN}`
+      console.log('202save')
+      let data = this.data
+      if (this.haveRecord) data = [...this.data, ...this.records]
+      let uri = `${Config.APIURL}${Config.PART.TRANSFSAVE}`
       axios.post(uri, {
         email: this.email,
-        password: this.password
+        data: data
       }).then(responseLogin => {
-        console.log('RESPONSE API LOGIN', responseLogin)
+        console.log('TRANSFSAVE', responseLogin)
         if (responseLogin.data.status.code === 0) {
-          localStorage.setItem('userData', JSON.stringify(responseLogin.data.data))
           let res = responseLogin.data.data
-          console.log('auth pass res', res)
-          if (res.type) {
-            if (res.type === 'admin') {
-              this.$router.replace('admin')
-            } else if (res.type === 'user' || res.type === 'student') {
-              this.$router.replace('Profileviews')
-            }
-          } else {
-            alert('มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง')
-          }
+          console.log('TRANSFSAVE res', res)
+          alert('ดำเนินการสำเร็จ')
         } else {
-          alert('รหัสผิดพลาด')
+          alert(responseLogin.data.status.message)
         }
       }).catch(err => {
         // eslint-disable-next-line no-console
@@ -223,52 +241,22 @@ export default {
       })
     },
     pushrow () {
-      if (this.tagitem && (this.data.length !== 0)) {
-        console.log('tagitem', this.tagitem)
-        this.duplicateSubjectId = false
-        if (this.subjectid !== '') {
-          for (let i = 0; i < this.data.length; i++) {
-            console.log(this.data[i].subjectid, '===', this.subjectid)
-            if (this.data[i].subjectid === this.subjectid) {
-              this.duplicateSubjectId = true
-              console.log('this.duplicateSubjectId++', this.duplicateSubjectId)
-            }
+      // if (this.tagitem && (this.data.length !== 0)) {
+      console.log('tagitem', this.tagitem)
+      this.duplicateSubjectId = false
+      console.log('245this.subjectid', this.subjectid)
+      if (this.subjectid !== '') {
+        let data = this.records.length ? [...this.data, ...this.records] : this.data
+        for (let i = 0; i < data.length; i++) {
+          console.log(data[i].subjectid, '===', this.subjectid)
+          if (data[i].subjectid === this.subjectid) {
+            this.duplicateSubjectId = true
+            console.log('this.duplicateSubjectId++', this.duplicateSubjectId)
           }
-          console.log('this.duplicateSubjectId', this.duplicateSubjectId)
-          if (!this.duplicateSubjectId) {
-            console.log('iffffff this.subjectGrade', this.subjectGrade)
-            if (this.subjectGrade !== '') {
-              let _data = {
-                subjectid: this.subjectid,
-                subjectName: this.subjectName,
-                subjectGrade: this.subjectGrade,
-                subjectCredit: this.subjectCredit,
-                subjectRSUid: this.subjectRSUid,
-                subjectRSUname: this.subjectRSUname,
-                subjectRSUCredit: this.subjectRSUCredit
-              }
-              this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
-              this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
-              this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
-              this.tagitem[this.tagitem.length - 1].subjectGrade = this.subjectGrade
-              this.data.push(_data)
-              console.log('this.data>>:', this.data)
-              this.subjectid = ''
-              this.tagitem.push({
-                subjectName: '',
-                loopSubjectId: []
-              })
-            } else {
-              alert('กรุณาทำการเลือกผลการเรียนก่อนทำการเพิ่มรายวิชาถัดไป')
-            }
-          } else {
-            alert('ไม่สามารถกทำการรอกรายวิชาซ้ำได้')
-          }
-        } else {
-          alert('กรุณาทำการกรอกรายวิชา และ กดปุ่ม "ตรวจสอบ"')
         }
-      } else if (this.tagitem && (this.data.length === 0)) {
-        if (this.subjectGrade !== '') {
+        console.log('this.duplicateSubjectId', this.duplicateSubjectId)
+        if (!this.duplicateSubjectId) {
+          console.log('iffffff this.subjectGrade', this.subjectGrade)
           if (this.subjectGrade !== '') {
             let _data = {
               subjectid: this.subjectid,
@@ -279,7 +267,10 @@ export default {
               // subjectRSUname: this.subjectRSUname,
               // subjectRSUCredit: this.subjectRSUCredit
             }
+            this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
+            this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
             this.tagitem[this.tagitem.length - 1].subjectGrade = this.subjectGrade
+            this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
             this.data.push(_data)
             console.log('this.data>>:', this.data)
             this.subjectid = ''
@@ -291,12 +282,46 @@ export default {
             alert('กรุณาทำการเลือกผลการเรียนก่อนทำการเพิ่มรายวิชาถัดไป')
           }
         } else {
-          alert('กรุณาทำการกรอกรายวิชา และ กดปุ่ม "ตรวจสอบ"')
+          alert('ไม่สามารถกทำการรอกรายวิชาซ้ำได้')
         }
+      } else {
+        alert('กรุณาทำการกรอกรายวิชา และ กดปุ่ม "ตรวจสอบ"')
       }
+      // } else if (this.tagitem && (this.data.length === 0)) {
+      //   if (this.subjectGrade !== '') {
+      //     if (this.subjectGrade !== '') {
+      //       let _data = {
+      //         subjectid: this.subjectid,
+      //         subjectName: this.subjectName,
+      //         subjectGrade: this.subjectGrade,
+      //         subjectCredit: this.subjectCredit
+      //         // subjectRSUid: this.subjectRSUid,
+      //         // subjectRSUname: this.subjectRSUname,
+      //         // subjectRSUCredit: this.subjectRSUCredit
+      //       }
+      //       this.tagitem[this.tagitem.length - 1].subjectGrade = this.subjectGrade
+      //       this.data.push(_data)
+      //       console.log('this.data>>:', this.data)
+      //       this.subjectid = ''
+      //       this.tagitem.push({
+      //         subjectName: '',
+      //         loopSubjectId: []
+      //       })
+      //     } else {
+      //       alert('กรุณาทำการเลือกผลการเรียนก่อนทำการเพิ่มรายวิชาถัดไป')
+      //     }
+      //   } else {
+      //     alert('กรุณาทำการกรอกรายวิชา และ กดปุ่ม "ตรวจสอบ"')
+      //   }
+      // }
     },
-    log () {
-      console.log('status', this.status)
+    deleteRow (index, isRecord) {
+      if (isRecord) this.records = this.records.filter((v, i, a) => (i !== index))
+      else {
+        this.tagitem = this.tagitem.filter((v, i, a) => (i !== index))
+        this.data = this.data.filter((v, i, a) => (i !== index))
+      }
+      console.log('314delete', index, isRecord, this.records.length)
     }
   }
 }

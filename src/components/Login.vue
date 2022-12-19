@@ -139,6 +139,7 @@ export default {
       password_2: ''
     }
   },
+  async created () {},
   methods: {
     async login () {
       let uri = `${Config.APIURL}${Config.PART.LOGIN}`

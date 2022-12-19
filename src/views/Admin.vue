@@ -66,10 +66,11 @@
                             </router-link>
                         </li>
                         <li>
-                            <a href="#" @click="logout()">
+                            <button class="btn btn-outline-danger my-2 my-sm-0" @click="logout">logout</button>
+                            <!-- <a href="#" @click="logout">
                                 <i class="fa fa-power-off"></i>
                                 <span>Logout</span>
-                            </a>
+                            </a> -->
                         </li>
                     </ul>
                 </div>
@@ -100,6 +101,13 @@ export default {
   },
   created () {
     console.log('---> ', JSON.parse(localStorage.getItem('userData')))
+  },
+  methods: {
+    logout () {
+      console.log('log logout')
+      localStorage.clear()
+      this.$router.replace('/')
+    }
   }
 }
 </script>
