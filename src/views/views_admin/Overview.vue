@@ -144,6 +144,7 @@ export default {
     return {
       transferList: [],
       isOpentViewRecord: false,
+      viewUser: { rsuId: '' },
       records: [],
       stacks: []
     }
@@ -172,6 +173,7 @@ export default {
       })
     },
     viewRecord (data) {
+      this.viewUser = data
       console.log('79viewRecord', data.subjects)
       this.isOpentViewRecord = true
       this.records = data.subjects
@@ -212,13 +214,34 @@ export default {
         }
       }
     },
-    saveStack () {
-      console.log('217data', this.stacks)
+    async saveStack () {
+      if (this.isOpentViewRecord) {
+        console.log('saveStack', Config.PART.TRANSFERRSUSAVE, 'this.viewUser', this.viewUser)
+        let uri = `${Config.APIURL}${Config.PART.TRANSFERRSUSAVE}`
+        await axios.post(uri, {
+          rsuId: this.viewUser.rsuId,
+          records: this.stacks
+        }).then(response => {
+          console.log('RESPONSE API TRANSFERRSUSAVE', response)
+          if (response.data.status.code === 0) {
+            let res = response.data.data
+            console.log('TRANSFERRSUSAVE res', res)
+            this.transferList = res
+            alert('ดำเนินการสำเร็จ')
+          } else {
+            alert(`${response.data.status.message}`)
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+      }
     },
-    clear () {
+    async clear () {
+      this.viewUser = { rsuId: '' }
       this.records = []
       this.stacks = []
       this.isOpentViewRecord = false
+      await this.findRecord()
     }
   }
 }

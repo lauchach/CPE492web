@@ -10,7 +10,8 @@ const Config = {
     TRANSFERSAVE: 'transfer/user/update',
     TRANSFERFETCH: 'transfer/record/fetch',
     TRANSFERRECORDLIST: 'transfer/record/list',
-    TRANSFERSUBJECT: 'transfer/subject'
+    TRANSFERSUBJECT: 'transfer/subject',
+    TRANSFERRSUSAVE: 'transfer/subject/save'
   }
 }
 
