@@ -49,7 +49,7 @@
                         <li>
                             <router-link to="/admin/subjectmap">
                                 <i class="fab fa-amazon"></i>
-                                <span>แผนรายวิชาเทียบโอน</span>
+                                <span>จัดการรายวิชา</span>
                             </router-link>
                         </li>
                         <li>

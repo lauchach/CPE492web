@@ -11,7 +11,12 @@ const Config = {
     TRANSFERFETCH: 'transfer/record/fetch',
     TRANSFERRECORDLIST: 'transfer/record/list',
     TRANSFERSUBJECT: 'transfer/subject',
-    TRANSFERRSUSAVE: 'transfer/subject/save'
+    TRANSFERRSUSAVE: 'transfer/subject/save',
+    TRANSFERSUBJECTAPPROVE: 'transfer/subject/approve',
+    TRANSFERSUBJECTUNAPPROVE: 'transfer/subject/unApprove',
+    // subjectlist
+    SUBJECTLIST: 'transfer/subject/list',
+    SUBJECTRSULIST: 'transfer/subject/rsu/list'
   }
 }
 

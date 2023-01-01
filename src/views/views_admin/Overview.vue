@@ -110,8 +110,10 @@
                           <td>{{item.subjectGrade}}</td>
                           <!-- rsu -->
                           <td>{{item.rsu.rsuSubject.subjectRSUid}}</td>
-                          <td v-if="item.rsu.isMore"><button class="btn btn-secondary" @click="addField(item)">เลือกวิชาเพิ่ม</button></td>
-                          <td v-else></td>
+                          <td v-if="item.rsu.isMore && !item.rsu.isHave"><button class="btn btn-secondary" @click="addField(item), item.rsu.isHave = true">เลือกวิชาเพิ่ม</button></td>
+                          <td v-else>
+                            <button class="btn btn-primary" @click="approve(item)">อนุมัติ</button>
+                          </td>
                           <td>{{item.rsu.rsuSubject.subjectRSUName}}</td>
                           <td>{{item.rsu.rsuSubject.subjectRSUCredit}}</td>
                           <td rowspan="2">{{item.subjectGrade}}</td>
@@ -127,7 +129,65 @@
               </div>
             </div>
           </div>
-      </transition>
+        </transition>
+        <div v-if="this.approves.length">
+          <transition name="model">
+            <div class="modal-content">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <!--                        รายวิชาเทียบโอนแล้ว                             -->
+                  <h5 class="modal-title" id="exampleModalLabel">รายวิชาเทียบโอนแล้ว</h5>
+                  <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="clear()">
+                    <span aria-hidden="true">&times;</span>
+                  </button> -->
+                </div>
+                <div v-if="this.approves.length">
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <table class="transfer-table">
+                        <thead>
+                          <tr>
+                            <th>รหัสวิชา</th>
+                            <th>ปุ่ม</th>
+                            <th>ชื่อวิชา</th>
+                            <th>หน่วยกิต</th>
+                            <th>เกรด</th>
+                            <th>รหัสวิชา</th>
+                            <th>ชื่อวิชา</th>
+                            <th>หน่วยกิต</th>
+                            <th>เกรด</th>
+                          </tr>
+                        </thead>
+                        <tbody v-for="(item, i) in approves" :key="i">
+                          <tr>
+                            <td>{{item.subjectid}}</td>
+                            <td><button class="btn btn-secondary" @click="unApprove(item)">ยกเลิก</button></td>
+                            <td>{{item.subjectName}}</td>
+                            <td>{{item.subjectCredit}}</td>
+                            <td>{{item.subjectGrade}}</td>
+                            <!-- rsu -->
+                            <td>{{item.rsu.rsuSubject.subjectRSUid}}</td>
+                            <!-- <td v-if="item.rsu.isMore && !item.rsu.isHave"><button class="btn btn-secondary" @click="addField(item), item.rsu.isHave = true">เลือกวิชาเพิ่ม</button></td>
+                            <td v-else>
+                              <button class="btn btn-primary" @click="approve(item)">อนุมัติ</button>
+                            </td> -->
+                            <td>{{item.rsu.rsuSubject.subjectRSUName}}</td>
+                            <td>{{item.rsu.rsuSubject.subjectRSUCredit}}</td>
+                            <td rowspan="2">{{item.subjectGrade}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="clear()">ปิด</button> -->
+                  <!-- <button type="button" class="btn btn-primary"  @click='saveStack()'>บันทึก</button> -->
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
       </div>
   </div>
 </template>
@@ -146,7 +206,8 @@ export default {
       isOpentViewRecord: false,
       viewUser: { rsuId: '' },
       records: [],
-      stacks: []
+      stacks: [],
+      approves: []
     }
   },
   async created () {
@@ -172,11 +233,43 @@ export default {
         console.log(err)
       })
     },
-    viewRecord (data) {
-      this.viewUser = data
+    async viewRecord (data) {
+      await data.subjects.forEach(async (v) => {
+        if (v.status === 'APPROVE') {
+          await data.mapRsuDatas.forEach(async (y) => {
+            await y.SubjectIds.forEach(async (z) => {
+              if (z.subjectid === v.subjectid) {
+                let uri = `${Config.APIURL}${Config.PART.TRANSFERSUBJECT}`
+                await axios.post(uri, {
+                  subjectid: z.subjectid
+                }).then(response => {
+                  if (response.data.status.code === 0) {
+                    let res = response.data.data
+                    v.rsu = res
+                  } else {
+                    alert(`${response.data.status.message}`)
+                  }
+                }).catch(err => {
+                  console.log(err)
+                })
+                this.approves = [...this.approves, v]
+              }
+            })
+          })
+        }
+      })
       console.log('79viewRecord', data.subjects)
-      this.isOpentViewRecord = true
+      data.subjects = await data.subjects.filter(v => {
+        console.log('v.status', v.status)
+        if (!v.status) return true
+        else if (v.status && v.status === 'APPROVE') return false
+        else return true
+      })
+      this.viewUser = data
       this.records = data.subjects
+      setTimeout(() => {
+        this.isOpentViewRecord = true
+      }, 500)
     },
     async stack (data) {
       this.records = await this.records.filter(v => (v.subjectid !== data.subjectid))
@@ -201,6 +294,8 @@ export default {
       })
     },
     unStack (data) {
+      console.log('204data', data.rsu.isHave)
+      if (data.rsu.isMore && data.rsu.isHave) data.rsu.isHave = false
       this.stacks = this.stacks.filter(v => (v.subjectid !== data.subjectid))
       this.records = [...this.records, data]
     },
@@ -236,10 +331,50 @@ export default {
         })
       }
     },
+    async approve (data) {
+      if (!data.subjectid) alert('ผิดปกติ')
+      let uri = `${Config.APIURL}${Config.PART.TRANSFERSUBJECTAPPROVE}`
+      await axios.post(uri, {
+        rsuId: this.viewUser.rsuId,
+        subjectId: data.subjectid
+      }).then(response => {
+        if (response.data.status.code === 0) {
+          let res = response.data.data
+          console.log('252res', res)
+          this.approves = [...this.approves, data]
+          this.stacks = this.stacks.filter(v => v.subjectid !== data.subjectid)
+        } else {
+          alert(`${response.data.status.message}`)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    async unApprove (data) {
+      console.log('353data', data)
+      if (!data.subjectid) alert('ผิดปกติ')
+      let uri = `${Config.APIURL}${Config.PART.TRANSFERSUBJECTUNAPPROVE}`
+      await axios.post(uri, {
+        rsuId: this.viewUser.rsuId,
+        subjectId: data.subjectid
+      }).then(response => {
+        if (response.data.status.code === 0) {
+          // let res = response.data.data
+          console.log('361res', this.approves.filter(v => v.subjectid !== data.subjectid))
+          this.approves = this.approves.filter(v => v.subjectid !== data.subjectid)
+          this.records = [...this.records, data]
+        } else {
+          alert(`${response.data.status.message}`)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     async clear () {
       this.viewUser = { rsuId: '' }
       this.records = []
       this.stacks = []
+      this.approves = []
       this.isOpentViewRecord = false
       await this.findRecord()
     }
