@@ -25,6 +25,15 @@
               >
                 ดูราลละเอียด
               </button>
+              <th v-if="item.status == 'อนุมัติผลการเทียบโอนแล้ว' ">
+                <button class='btn btn-light'
+                  data-toggle="modal"
+                  data-target="#exampleModal"
+                  @click='printTo(item)'
+                >
+                  พิมพ์
+                </button>
+              <!-- </th> -->
             </th>
           </tr>
           <v-data-table
@@ -180,6 +189,34 @@
                     </div>
                   </div>
                 </div>
+                  <ul class="list-group">
+                    <div v-if='isEditStatus'>
+                      <li class="list-group-item">
+                      <button type="button" class="close" data-dismiss="modal" @click="isEditStatus=false, status=''"><span aria-hidden="true">&times;</span></button>
+                      <button type="button" class="btn btn-primary" @click="isEditStatus=true">{{ viewUser.status }}</button>
+                      </li>
+                      <li class="list-group-item">
+                        <input class="form-check-input me-1" type="radio" name="listGroupRadio" value="รอข้อมูลเพิ่มเติม" v-model="viewUser.status" isEditStatus=false id="firstRadio"
+                          @click="isEditStatus=false, viewUser.status = 'รอข้อมูลเพิ่มเติม', editStatus('รอข้อมูลเพิ่มเติม')">
+                        <label class="form-check-label" for="firstRadio">รอข้อมูลเพิ่มเติม</label>
+                      </li>
+                      <li class="list-group-item">
+                        <input class="form-check-input me-1" type="radio" name="listGroupRadio" value="กำลังเทียบโอน" v-model="viewUser.status" id="secondRadio"
+                          @click="isEditStatus=false, viewUser.status = 'กำลังเทียบโอน', editStatus('กำลังเทียบโอน')">
+                        <label class="form-check-label" for="secondRadio">กำลังเทียบโอน</label>
+                      </li>
+                      <li class="list-group-item">
+                        <input class="form-check-input me-1" type="radio" name="listGroupRadio" value="อนุมัติผลการเทียบโอนแล้ว" v-model="viewUser.status" id="thirdRadio"
+                          @click="isEditStatus=false, viewUser.status = 'อนุมัติผลการเทียบโอนแล้ว', editStatus('อนุมัติผลการเทียบโอนแล้ว')">
+                        <label class="form-check-label" for="thirdRadio">อนุมัติผลการเทียบโอนแล้ว</label>
+                      </li>
+                    </div>
+                    <div v-else>
+                      <li class="list-group-item">
+                      <button type="button" class="btn btn-primary" @click="isEditStatus=true">{{ viewUser.status }}</button>
+                      </li>
+                    </div>
+                  </ul>
                 <div class="modal-footer">
                   <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="clear()">ปิด</button> -->
                   <!-- <button type="button" class="btn btn-primary"  @click='saveStack()'>บันทึก</button> -->
@@ -207,7 +244,8 @@ export default {
       viewUser: { rsuId: '' },
       records: [],
       stacks: [],
-      approves: []
+      approves: [],
+      isEditStatus: false
     }
   },
   async created () {
@@ -370,6 +408,26 @@ export default {
         console.log(err)
       })
     },
+    async editStatus (data) {
+      console.log('403data', data)
+      if (!data) alert('ผิดปกติ')
+      let uri = `${Config.APIURL}${Config.PART.EDITSTATUS}`
+      await axios.post(uri, {
+        rsuId: this.viewUser.rsuId,
+        status: this.viewUser.status
+      }).then(response => {
+        if (response.data.status.code === 0) {
+          // let res = response.data.data
+          // console.log('361res', this.approves.filter(v => v.subjectid !== data.subjectid))
+          // this.approves = this.approves.filter(v => v.subjectid !== data.subjectid)
+          // this.records = [...this.records, data]
+        } else {
+          alert(`${response.data.status.message}`)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     async clear () {
       this.viewUser = { rsuId: '' }
       this.records = []
@@ -377,6 +435,11 @@ export default {
       this.approves = []
       this.isOpentViewRecord = false
       await this.findRecord()
+    },
+    async printTo (data) {
+      console.log('440', data)
+      localStorage.setItem('printData', JSON.stringify(data.rsuId))
+      this.$router.replace('/Printpage')
     }
   }
 }

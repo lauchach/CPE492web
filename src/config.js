@@ -6,9 +6,11 @@ const Config = {
     REGISTER: 'user/register',
     PROFILEUPDATA: 'user/profile/update',
     GETPROFILE: 'user/profile/get',
+    EDITSTATUS: 'user/profile/edit/status',
     // transfer
     TRANSFERSAVE: 'transfer/user/update',
     TRANSFERFETCH: 'transfer/record/fetch',
+    TRANSFERFETCHFULL: 'transfer/record/fetch/full',
     TRANSFERRECORDLIST: 'transfer/record/list',
     TRANSFERSUBJECT: 'transfer/subject',
     TRANSFERRSUSAVE: 'transfer/subject/save',
