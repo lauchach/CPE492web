@@ -18,7 +18,10 @@ const Config = {
     TRANSFERSUBJECTUNAPPROVE: 'transfer/subject/unApprove',
     // subjectlist
     SUBJECTLIST: 'transfer/subject/list',
-    SUBJECTRSULIST: 'transfer/subject/rsu/list'
+    SUBJECTRSULIST: 'transfer/subject/rsu/list',
+    // upload
+    UPLOADIMG: 'upload/img',
+    GETIMGLINK: 'upload/img/get'
   }
 }
 

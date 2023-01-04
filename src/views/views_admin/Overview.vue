@@ -133,8 +133,23 @@
                 </div>
               </div>
               <div class="modal-footer">
+                <div v-if="upload.img">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="isViewUpload = true">ดู transcript</button>
+                </div>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="clear()">ปิด</button>
                 <button type="button" class="btn btn-primary"  @click='saveStack()'>บันทึก</button>
+              </div>
+              <div v-if="isViewUpload">
+                <div style="margin-left: 0%; margin-top: 30px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="isViewUpload = false">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="form-group">
+                  <div style="margin-left: 0%; margin-top: 30px">
+                    <img style="width: 800px" :src="upload.img" alt="">
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -245,7 +260,11 @@ export default {
       records: [],
       stacks: [],
       approves: [],
-      isEditStatus: false
+      isEditStatus: false,
+      isViewUpload: false,
+      upload: {
+        img: ''
+      }
     }
   },
   async created () {
@@ -305,6 +324,7 @@ export default {
       })
       this.viewUser = data
       this.records = data.subjects
+      this.uploadImaGetLink()
       setTimeout(() => {
         this.isOpentViewRecord = true
       }, 500)
@@ -434,12 +454,28 @@ export default {
       this.stacks = []
       this.approves = []
       this.isOpentViewRecord = false
+      this.isViewUpload = false
+      this.upload = { img: '' }
       await this.findRecord()
     },
     async printTo (data) {
       console.log('440', data)
       localStorage.setItem('printData', JSON.stringify(data.rsuId))
       this.$router.replace('/Printpage')
+    },
+    async uploadImaGetLink () {
+      console.log('uploadImaGetLink')
+      let uri = `${Config.APIURL}${Config.PART.GETIMGLINK}`
+      await axios.post(uri, { rsuId: this.viewUser.rsuId }).then(response => {
+        if (response.data.status.code === 0) {
+          this.upload.img = response.data.data.linkImg
+          console.log('455', this.upload.img)
+        } else {
+          alert(`${response.data.status.message}`)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
     }
   }
 }

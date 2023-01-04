@@ -1,33 +1,95 @@
 <template>
     <div class="container">
-      <div class="card bg-dark text-back">
+      <div v-if="!isPrint">
+      <button style="margin-left: -205px; margin-bottom: 20px" class="btn btn-primary" type="button" @click="print()">พิมพ์</button>
+      <button style="margin-left: -305px; margin-bottom: 20px" class="btn btn-primary" type="button" @click="backpage()">กลับ</button>
+      </div>
+      <div style="width: 900px" class="card bg-dark text-back">
         <img class="card-img" src="/img/svg/page2.png" alt="Card image">
         <div class="card-img-overlay">
-          <div style="margin-left: 20px">
-          <div style="margin-right: 0px">
-          <div class="row" style="margin-top: 280px">
-            <div class="col-1">col-1</div>
-            <div class="col-3">{{ rsuId }}</div>
-            <div style="margin-left: 20px" class="col-0.5">col-1</div>
-            <div style="margin-left: 10px" class="col-1">col-1</div>
-            <div class="col-0.5">col-1</div>
-            <div style="margin-left: 00px" class="col-3">col-1</div>
-            <div class="col-1">col-1</div>
-            <div style="margin-left: 0px" class="col-0.5">col-1</div>
-            <div style="margin-left: 20px" class="col-1">col-1</div>
-          </div>
-          <div class="row" style="margin-top: 10px">
-            <div class="col-1">col-1</div>
-            <div class="col-3">{{ rsuId }}</div>
-            <div style="margin-left: 20px" class="col-0.5">col-1</div>
-            <div style="margin-left: 10px" class="col-1">col-1</div>
-            <div class="col-0.5">col-1</div>
-            <div style="margin-left: 00px" class="col-3">col-1</div>
-            <div class="col-1">col-1</div>
-            <div style="margin-left: 0px" class="col-0.5">col-1</div>
-            <div style="margin-left: 20px" class="col-1">col-1</div>
-          </div>
-          </div>
+          <div style="margin-left: -25px">
+            <div style="margin-right: 0px">
+              <div v-for="(item, i) in cols" :key="i">
+                <div v-if="i === 0" class="row" style="margin-top: 220px">
+                  <div class="col-2">{{ item.subjectid }}</div>
+                  <div v-if="item.subjectName.length < 25" style="margin-left: -50px" class="col-3">{{ item.subjectName }}</div>
+                  <div v-else style="margin-left: -60px" class="col-3">{{ item.subjectName }}</div>
+                  <div v-if="item.subjectName.length < 25" style="margin-left: 25px" class="col-0.5">{{ item.subjectCredit }}</div>
+                  <div v-else style="margin-left: 20px" class="col-0.5">{{ item.subjectCredit }}</div>
+                  <div style="margin-left: 10px" class="col-1">{{ item.subjectGrade }}</div>
+                  <div class="col-0.5">{{ item.rsuSubjecteId }}</div>
+                  <div style="margin-left: 0px" class="col-3">{{ item.rsuSubjectName }}</div>
+                  <div style="margin-left: -40px" class="col-1">{{ item.rsuSubjectCredit }}</div>
+                  <div style="margin-left: 0px" class="col-0.5">{{ item.rsuSubjectGrade }}</div>
+                  <div style="margin-left: 20px" class="col-1"></div>
+                </div>
+                <div v-else class="row" style="margin-top: 4px">
+                  <div class="col-2">{{ item.subjectid }}</div>
+                  <div v-if="item.subjectName.length < 25" style="margin-left: -50px" class="col-3">{{ item.subjectName }}</div>
+                  <div v-else style="margin-left: -50px" class="col-3">{{ item.subjectName }}</div>
+                  <div v-if="item.subjectName.length < 25" style="margin-left: 25px" class="col-0.5">{{ item.subjectCredit }}</div>
+                  <div v-else style="margin-left: 25px" class="col-0.5">{{ item.subjectCredit }}</div>
+                  <div style="margin-left: 10px" class="col-1">{{ item.subjectGrade }}</div>
+                  <div class="col-0.5">{{ item.rsuSubjecteId }}</div>
+                  <div style="margin-left: -10px" class="col-3">{{ item.rsuSubjectName }}</div>
+                  <div style="margin-left: -30px" class="col-1">{{ item.rsuSubjectCredit }}</div>
+                  <div style="margin-left: 0px" class="col-0.5">{{ item.rsuSubjectGrade }}</div>
+                  <div style="margin-left: 20px" class="col-1"></div>
+                </div>
+              </div>
+              <!-- <div v-if="cols.length > 0" class="row" style="margin-top: 280px">
+                <div class="col-2">{{ cols[0].subjectid }}</div>
+                <div v-if="cols[2].subjectName.length < 25" style="margin-left: -80px" class="col-3">{{ cols[0].subjectName }}</div>
+                <div v-else style="margin-left: -60px" class="col-3">{{ cols[0].subjectName }}</div>
+                <div v-if="cols[2].subjectName.length < 25" style="margin-left: 40px" class="col-0.5">{{ cols[0].subjectCredit }}</div>
+                <div v-else style="margin-left: 20px" class="col-0.5">{{ cols[0].subjectCredit }}</div>
+                <div style="margin-left: 20px" class="col-1">{{ cols[0].subjectGrade }}</div>
+                <div class="col-0.5">{{ cols[0].rsuSubjecteId }}</div>
+                <div style="margin-left: 0px" class="col-3">{{ cols[0].rsuSubjectName }}</div>
+                <div style="margin-left: -40px" class="col-1">{{ cols[0].rsuSubjectCredit }}</div>
+                <div style="margin-left: 15px" class="col-0.5">{{ cols[0].rsuSubjectGrade }}</div>
+                <div style="margin-left: 20px" class="col-1"></div>
+              </div>
+              <div v-if="cols.length > 1" class="row" style="margin-top: 10px">
+                <div class="col-2">{{ cols[1].subjectid }}</div>
+                <div v-if="cols[2].subjectName.length < 25" style="margin-left: -80px" class="col-3">{{ cols[1].subjectName }}</div>
+                <div v-else style="margin-left: -60px" class="col-3">{{ cols[1].subjectName }}</div>
+                <div v-if="cols[2].subjectName.length < 25" style="margin-left: 40px" class="col-0.5">{{ cols[1].subjectCredit }}</div>
+                <div v-else style="margin-left: 20px" class="col-0.5">{{ cols[1].subjectCredit }}</div>
+                <div style="margin-left: 20px" class="col-1">{{ cols[1].subjectGrade }}</div>
+                <div class="col-0.5">{{ cols[1].rsuSubjecteId }}</div>
+                <div style="margin-left: 0px" class="col-3">{{ cols[1].rsuSubjectName }}</div>
+                <div style="margin-left: -40px" class="col-1">{{ cols[1].rsuSubjectCredit }}</div>
+                <div style="margin-left: 15px" class="col-0.5">{{ cols[1].rsuSubjectGrade }}</div>
+                <div style="margin-left: 20px" class="col-1"></div>
+              </div> -->
+              <!-- <div v-if="cols.length > 2" class="row" style="margin-top: 10px">
+                <div class="col-2">{{ cols[2].subjectid }}</div>
+                <div v-if="cols[2].subjectName.length < 25" style="margin-left: -80px" class="col-3">{{ cols[2].subjectName }}</div>
+                <div v-else style="margin-left: -60px" class="col-3">{{ cols[2].subjectName }}</div>
+                <div v-if="cols[2].subjectName.length < 25" style="margin-left: 40px" class="col-0.5">{{ cols[2].subjectCredit }}</div>
+                <div v-else style="margin-left: 20px" class="col-0.5">{{ cols[2].subjectCredit }}</div>
+                <div style="margin-left: 20px" class="col-1">{{ cols[2].subjectGrade }}</div>
+                <div class="col-0.5">{{ cols[2].rsuSubjecteId }}</div>
+                <div style="margin-left: 0px" class="col-3">{{ cols[2].rsuSubjectName }}</div>
+                <div style="margin-left: -40px" class="col-1">{{ cols[2].rsuSubjectCredit }}</div>
+                <div style="margin-left: 15px" class="col-0.5">{{ cols[2].rsuSubjectGrade }}</div>
+                <div style="margin-left: 20px" class="col-1"></div>
+              </div>
+              <div v-if="cols.length > 3" class="row" style="margin-top: 10px">
+                <div class="col-2">{{ cols[3].subjectid }}</div>
+                <div v-if="cols[2].subjectName.length < 25" style="margin-left: -80px" class="col-3">{{ cols[3].subjectName }}</div>
+                <div v-else style="margin-left: -60px" class="col-3">{{ cols[3].subjectName }}</div>
+                <div v-if="cols[2].subjectName.length < 25" style="margin-left: 40px" class="col-0.5">{{ cols[3].subjectCredit }}</div>
+                <div v-else style="margin-left: 20px" class="col-0.5">{{ cols[3].subjectCredit }}</div>
+                <div style="margin-left: 20px" class="col-1">{{ cols[3].subjectGrade }}</div>
+                <div class="col-0.5">{{ cols[3].rsuSubjecteId }}</div>
+                <div style="margin-left: 0px" class="col-3">{{ cols[3].rsuSubjectName }}</div>
+                <div style="margin-left: -40px" class="col-1">{{ cols[3].rsuSubjectCredit }}</div>
+                <div style="margin-left: 15px" class="col-0.5">{{ cols[3].rsuSubjectGrade }}</div>
+                <div style="margin-left: 20px" class="col-1"></div>
+              </div> -->
+            </div>
           </div>
         </div>
       </div>
@@ -43,7 +105,8 @@ export default {
   data () {
     return {
       rsuId: JSON.parse(localStorage.getItem('printData')),
-      cols: []
+      cols: [],
+      isPrint: false
     }
   },
   async created () {
@@ -56,15 +119,30 @@ export default {
     findRecord () {
       console.log('59 ')
       let uri = `${Config.APIURL}${Config.PART.TRANSFERFETCHFULL}`
-      axios.post(uri, {}).then(response => {
+      axios.post(uri, {
+        rsuId: this.rsuId
+      }).then(response => {
         console.log('RESPONSE API TRANSFERRECORDLIST', response)
         if (response.data.status.code === 0) {
+          this.cols = response.data.data.cols
         } else {
           alert(`${response.data.status.message}`)
         }
       }).catch(err => {
         console.log(err)
       })
+    },
+    backpage () {
+      this.$router.replace('admin/overview')
+    },
+    print () {
+      this.isPrint = true
+      setTimeout(() => {
+        window.print()
+      }, 300)
+      setTimeout(() => {
+        this.isPrint = false
+      }, 1000)
     }
   }
 }

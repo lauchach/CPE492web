@@ -8,7 +8,7 @@
         <div class="container">
           <h1>กรอกข้อมูลเทียบโอน</h1>
         </div>
-        <div class="inputtextgroup2">
+        <div v-if="status !== 'รอข้อมูลเพิ่มเติม'" class="inputtextgroup2">
           <div v-if="haveRecord">
             <table class="transfer-table">
               <thead>
@@ -61,9 +61,9 @@
                   <td>
                     <select id="txt_r_state" v-model="subjectGrade" class="form-control">
                       <option value="">เกรด</option>
-                      <option value="1">1</option>
+                      <!-- <option value="1" @click="this.$alert('Hello Vue Simple Alert.')">1</option>
                       <option value="1.5">1.5</option>
-                      <option value="2">2</option>
+                      <option value="2">2</option> -->
                       <option value="2.5">2.5</option>
                       <option value="3">3</option>
                       <option value="3.5">3.5</option>
@@ -92,6 +92,24 @@
             <img src="../../../dist/img/svg/false.png" alt="" width="700">
           </div>
         </div>
+        <div v-else>
+          <h3>อัพโหลดเอกสาร</h3>
+          <div style="width: 500px; margin-left: 32%; margin-top: 30px">
+            <!-- <label class="form-label" for="customFile"></label> -->
+            <input type="file" class="form-control" id="customFile" @change="uploadImage" />
+          </div>
+          <div class="form-group">
+            <div style="margin-left: 0%; margin-top: 30px">
+              <img style="width: 800px" :src="upload.image" alt="">
+            </div>
+          </div>
+          <div v-if="!isUpload">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" >กรุณา upload ภาพถ่าย transcript หรือ ใบแสดงผลการศึกษา ก่อนทำการกรอกผลการศึกษา</button>
+          </div>
+          <div v-else>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" @click="editStatus('รอการเทียบโอน'); status = 'รอการเทียบโอน'">ทำการกรอกผลการศึกษาเพื่อเทียบโอน</button>
+          </div>
+        </div>
       </div>
     </div>
     <div>
@@ -100,9 +118,12 @@
   </div>
 </template>
 <script>
+// import { fb, getStorage } from '../../firebase'
 import { fb } from '../../firebase'
 import { Config } from '../../config'
 import axios from 'axios'
+// import { getStorage, ref } from '../../firebase/storage'
+
 // @ is an alias to /src
 export default {
   name: 'Transfer',
@@ -138,12 +159,17 @@ export default {
       duplicateSubjectId: false,
       haveRecord: false,
       findRecordData: '',
-      db: fb.firestore()
+      db: fb.firestore(),
+      upload: {
+        image: ''
+      },
+      isUpload: false
     }
   },
   async created () {
     await this.findStatus()
     await this.findRecord()
+    await this.getProfile()
   },
   methods: {
     findRecord () {
@@ -171,29 +197,28 @@ export default {
     },
     findStatus () {
       if (this.rsuId) {
-        console.log('175', this.rsuId)
-        this.db.collection('MEMBER_TABLE')
-          .where('rsuid', '==', this.rsuId).get()
-          .then(Show => {
-            Show.forEach(doc => {
-              if (doc.id) {
-                console.log('doc.data().status', doc.data().status)
-                this.status = doc.data().status
-              }
-            })
-          })
-          .catch(function (error) {
-            console.log('Error getting documents: ', error)
-          })
+        let uri = `${Config.APIURL}${Config.PART.GETPROFILE}`
+        axios.post(uri, {
+          email: JSON.parse(localStorage.getItem('userData')).email || ''
+        }).then(responseLogin => {
+          console.log('RESPONSE API setData', responseLogin)
+          if (responseLogin.data.status.code === 0) {
+            // localStorage.setItem('userData', JSON.stringify(responseLogin.data.data))
+            let res = responseLogin.data.data
+            if (res) {
+              this.status = responseLogin.data.data.status
+            } else {
+              alert('มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง')
+            }
+          } else {
+            alert('รหัสผิดพลาด')
+          }
+        }).catch(err => {
+          // eslint-disable-next-line no-console
+          console.log(err)
+        })
       }
     },
-    // addRow () {
-    //   let modelData = {
-    //     id: '',
-    //     name: this.counter++
-    //   }
-    //   this.data.push(modelData)
-    // },
     mapping () {
       if (this.subjectid !== '') {
         this.db.collection('SUBJECT_TABLE')
@@ -322,6 +347,53 @@ export default {
         this.data = this.data.filter((v, i, a) => (i !== index))
       }
       console.log('314delete', index, isRecord, this.records.length)
+    },
+    async editStatus (data) {
+      if (!data) alert('ผิดปกติ')
+      let uri = `${Config.APIURL}${Config.PART.EDITSTATUS}`
+      await axios.post(uri, {
+        rsuId: this.rsuId,
+        status: data
+      }).then(response => {
+        if (response.data.status.code === 0) {
+        } else {
+          alert(`${response.data.status.message}`)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    uploadImage (e) {
+      let file = e.target.files[0]
+      const storageRef = fb.storage().ref('transcript/' + file.name)
+      let uploadTask = storageRef.put(file)
+      uploadTask.on('state_changed', (snapshot) => {
+      }, (error) => {
+        console.log(error)
+      }, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          this.upload.image = downloadURL
+          this.isUpload = true
+          this.uploadImaLink(downloadURL)
+          console.log('346', downloadURL)
+        })
+      })
+    },
+    async uploadImaLink (link) {
+      console.log('uploadImaLink')
+      if (!link) alert('ผิดปกติ')
+      let uri = `${Config.APIURL}${Config.PART.UPLOADIMG}`
+      await axios.post(uri, {
+        rsuId: this.rsuId,
+        link: link
+      }).then(response => {
+        if (response.data.status.code === 0) {
+        } else {
+          alert(`${response.data.status.message}`)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
     }
   }
 }
