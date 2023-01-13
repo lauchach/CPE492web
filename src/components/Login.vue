@@ -172,25 +172,30 @@ export default {
       })
     },
     register () {
-      let uri = `${Config.APIURL}${Config.PART.REGISTER}`
-      axios.post(uri, {
-        email: this.email,
-        password_1: this.password_1,
-        password_2: this.password_2,
-        type: 'student'
-      }).then(responseRegister => {
-        console.log('RESPONSE API LOGIN', responseRegister)
-        if (responseRegister.data.status.code === 0) {
-          localStorage.setItem('userData', JSON.stringify(responseRegister.data.data))
-          let res = responseRegister.data.data
-          console.log('responseRegister res', res)
-        } else {
-          alert(`${responseRegister.data.status.message}`)
-        }
-      }).catch(err => {
-        // eslint-disable-next-line no-console
-        console.log(err)
-      })
+      if (this.email.split('@')[1] === 'rsu.ac.th') {
+        let uri = `${Config.APIURL}${Config.PART.REGISTER}`
+        axios.post(uri, {
+          email: this.email,
+          password_1: this.password_1,
+          password_2: this.password_2,
+          type: 'student'
+        }).then(responseRegister => {
+          console.log('RESPONSE API LOGIN', responseRegister)
+          if (responseRegister.data.status.code === 0) {
+            localStorage.setItem('userData', JSON.stringify(responseRegister.data.data))
+            let res = responseRegister.data.data
+            console.log('responseRegister res', res)
+            alert('สมัครสมาชิกสำเร็จ')
+          } else {
+            alert(`${responseRegister.data.status.message}`)
+          }
+        }).catch(err => {
+          // eslint-disable-next-line no-console
+          console.log(err)
+        })
+      } else {
+        alert('กรุณาลองใช้ Emal @rsu.ac.th')
+      }
     }
   }
 }

@@ -83,7 +83,7 @@
                     <tbody v-for="(item, i) in records" :key="i">
                       <tr>
                         <td>{{item.subjectid}}</td>
-                        <td><button class="btn btn-primary" @click="stack(item)">เทียบ</button></td>
+                        <td v-if="userType === 'deputyDean'"><button class="btn btn-primary" @click="stack(item)">เทียบ</button></td>
                         <td>{{item.subjectName}}</td>
                         <td>{{item.subjectCredit}}</td>
                         <td>{{item.subjectGrade}}</td>
@@ -113,7 +113,7 @@
                       <tbody v-for="(item, i) in stacks" :key="i">
                         <tr>
                           <td>{{item.subjectid}}</td>
-                          <td><button class="btn btn-secondary" @click="unStack(item)">ยกเลิก</button></td>
+                          <td v-if="userType === 'deputyDean'"><button class="btn btn-secondary" @click="unStack(item)">ยกเลิก</button></td>
                           <td>{{item.subjectName}}</td>
                           <td>{{item.subjectCredit}}</td>
                           <td>{{item.subjectGrade}}</td>
@@ -137,7 +137,7 @@
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="isViewUpload = true">ดู transcript</button>
                 </div>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="clear()">ปิด</button>
-                <button type="button" class="btn btn-primary"  @click='saveStack()'>บันทึก</button>
+                <button v-if="userType === 'deputyDean'" type="button" class="btn btn-primary"  @click='saveStack()'>บันทึก</button>
               </div>
               <div v-if="isViewUpload">
                 <div style="margin-left: 0%; margin-top: 30px">
@@ -185,7 +185,7 @@
                         <tbody v-for="(item, i) in approves" :key="i">
                           <tr>
                             <td>{{item.subjectid}}</td>
-                            <td><button class="btn btn-secondary" @click="unApprove(item)">ยกเลิก</button></td>
+                            <td v-if="userType === 'deputyDean'"><button class="btn btn-secondary" @click="unApprove(item)">ยกเลิก</button></td>
                             <td>{{item.subjectName}}</td>
                             <td>{{item.subjectCredit}}</td>
                             <td>{{item.subjectGrade}}</td>
@@ -208,7 +208,12 @@
                     <div v-if='isEditStatus'>
                       <li class="list-group-item">
                       <button type="button" class="close" data-dismiss="modal" @click="isEditStatus=false, status=''"><span aria-hidden="true">&times;</span></button>
-                      <button type="button" class="btn btn-primary" @click="isEditStatus=true">{{ viewUser.status }}</button>
+                      <div v-if="userType === 'deputyDean'">
+                        <button type="button" class="btn btn-primary" @click="isEditStatus=true">{{ viewUser.status }}</button>
+                      </div>
+                      <div v-else>
+                        <button type="button" class="btn btn-primary">{{ viewUser.status }}</button>
+                      </div>
                       </li>
                       <li class="list-group-item">
                         <input class="form-check-input me-1" type="radio" name="listGroupRadio" value="รอข้อมูลเพิ่มเติม" v-model="viewUser.status" isEditStatus=false id="firstRadio"
@@ -228,7 +233,12 @@
                     </div>
                     <div v-else>
                       <li class="list-group-item">
+                        <div v-if="userType === 'deputyDean'">
                       <button type="button" class="btn btn-primary" @click="isEditStatus=true">{{ viewUser.status }}</button>
+                        </div>
+                        <div v-else>
+                          <button type="button" class="btn btn-primary">{{ viewUser.status }}</button>
+                        </div>
                       </li>
                     </div>
                   </ul>
@@ -254,6 +264,7 @@ export default {
   },
   data () {
     return {
+      userType: JSON.parse(localStorage.getItem('userData')).type,
       transferList: [],
       isOpentViewRecord: false,
       viewUser: { rsuId: '' },

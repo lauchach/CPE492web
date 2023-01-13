@@ -46,7 +46,7 @@
                                 <span>รายการเทียบโอนทั้งหมด</span>
                             </router-link>
                         </li>
-                        <li>
+                        <li v-if="userType === 'deputyDean'">
                             <router-link to="/admin/subjectmap">
                                 <i class="fab fa-amazon"></i>
                                 <span>จัดการรายวิชา</span>
@@ -96,7 +96,8 @@ export default {
     return {
       email: JSON.parse(localStorage.getItem('userData')).student_mail,
       name: JSON.parse(localStorage.getItem('userData')).student_name,
-      rsuid: JSON.parse(localStorage.getItem('userData')).rsuid
+      rsuid: JSON.parse(localStorage.getItem('userData')).rsuid,
+      userType: JSON.parse(localStorage.getItem('userData')).type
     }
   },
   created () {

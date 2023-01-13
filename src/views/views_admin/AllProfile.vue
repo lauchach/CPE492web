@@ -67,12 +67,22 @@
                   <div class='col-md-1' align='left'>สถานะ</div>
                   <ul class="list-group">
                     <div v-if='!editStatus'>
-                      <button type="button" class="btn btn-primary" @click="editStatus=true">{{ data.status }}</button>
+                      <div v-if="userType === 'deputyDean'">
+                        <button type="button" class="btn btn-primary" @click="editStatus=true">{{ data.status }}</button>
+                      </div>
+                      <div v-else>
+                        <button type="button" class="btn btn-primary">{{ data.status }}</button>
+                      </div>
                     </div>
                     <div v-else>
                       <li class="list-group-item">
                       <button type="button" class="close" data-dismiss="modal" @click="editStatus=false, status=''"><span aria-hidden="true">&times;</span></button>
-                      <button type="button" class="btn btn-primary" @click="editStatus=true">{{ data.status }}</button>
+                      <div v-if="userType === 'deputyDean'">
+                        <button type="button" class="btn btn-primary" @click="editStatus=true">{{ data.status }}</button>
+                      </div>
+                      <div v-else>
+                        <button type="button" class="btn btn-primary">{{ data.status }}</button>
+                      </div>
                       </li>
                       <li class="list-group-item">
                         <input class="form-check-input me-1" type="radio" name="listGroupRadio" value="รอข้อมูลเพิ่มเติม" v-model="status" id="firstRadio">
@@ -93,7 +103,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="myModel=false, editStatus=false, status=''">ปิด</button>
-                <button type="button" class="btn btn-primary"  @click='addDataProfile()'>บันทึก</button>
+                <button v-if="userType === 'deputyDean'" type="button" class="btn btn-primary"  @click='addDataProfile()'>บันทึก</button>
               </div>
             </div>
           </div>
@@ -115,6 +125,7 @@ export default {
   },
   data () {
     return {
+      userType: JSON.parse(localStorage.getItem('userData')).type,
       userlist: [],
       data: {},
       myModel: false,

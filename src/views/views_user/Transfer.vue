@@ -62,8 +62,8 @@
                     <select id="txt_r_state" v-model="subjectGrade" class="form-control">
                       <option value="">เกรด</option>
                       <!-- <option value="1" @click="this.$alert('Hello Vue Simple Alert.')">1</option>
-                      <option value="1.5">1.5</option>
-                      <option value="2">2</option> -->
+                      <option value="1.5">1.5</option> -->
+                      <option value="2">2</option>
                       <option value="2.5">2.5</option>
                       <option value="3">3</option>
                       <option value="3.5">3.5</option>
@@ -206,6 +206,7 @@ export default {
             // localStorage.setItem('userData', JSON.stringify(responseLogin.data.data))
             let res = responseLogin.data.data
             if (res) {
+              console.log('responseLogin.data.data.status209', responseLogin.data.data.status)
               this.status = responseLogin.data.data.status
             } else {
               alert('มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง')

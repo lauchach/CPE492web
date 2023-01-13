@@ -61,6 +61,7 @@ export default {
       let uri = `${Config.APIURL}${Config.PART.PROFILEUPDATA}`
       axios.post(uri, {
         email: this.email,
+        status: 'รอข้อมูลเพิ่มเติม',
         detail: {
           nname: this.nname,
           name: this.name,
