@@ -11,7 +11,7 @@
               <router-link to="/" class="nav-link">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/products" class="nav-link" href="#">รายละเอียดวิชา</router-link>
+              <router-link to="/statusView" class="nav-link" href="#">ตรวจสอบสถานะ</router-link>
             </li>
             <li class="nav-item">
               <router-link to="/about" class="nav-link" href="#">ติดต่อ</router-link>
