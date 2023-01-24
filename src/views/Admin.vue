@@ -43,13 +43,13 @@
                             <router-link to="/admin/overview">
                             <!-- <router-link :to="{path: '/admin/overview'}"> -->
                                 <i class="fa fa-chart-line"></i>
-                                <span>(Overview)รายการเทียบโอนทั้งหมด</span>
+                                <span>รายการเทียบโอนทั้งหมด</span>
                             </router-link>
                         </li>
-                        <li>
+                        <li v-if="userType === 'deputyDean'">
                             <router-link to="/admin/subjectmap">
                                 <i class="fab fa-amazon"></i>
-                                <span>แผนรายวิชาเทียบโอน</span>
+                                <span>จัดการรายวิชา</span>
                             </router-link>
                         </li>
                         <li>
@@ -62,14 +62,15 @@
                         <li>
                             <router-link to="/admin/Allprofile">
                                 <i class="fa fa-user"></i>
-                                <span>จัดการ Profile</span>
+                                <span>จัดการบัญชีผู้ใช้</span>
                             </router-link>
                         </li>
                         <li>
-                            <a href="#" @click="logout()">
+                            <button class="btn btn-outline-danger my-2 my-sm-0" @click="logout">logout</button>
+                            <!-- <a href="#" @click="logout">
                                 <i class="fa fa-power-off"></i>
                                 <span>Logout</span>
-                            </a>
+                            </a> -->
                         </li>
                     </ul>
                 </div>
@@ -95,11 +96,19 @@ export default {
     return {
       email: JSON.parse(localStorage.getItem('userData')).student_mail,
       name: JSON.parse(localStorage.getItem('userData')).student_name,
-      rsuid: JSON.parse(localStorage.getItem('userData')).rsuid
+      rsuid: JSON.parse(localStorage.getItem('userData')).rsuid,
+      userType: JSON.parse(localStorage.getItem('userData')).type
     }
   },
   created () {
     console.log('---> ', JSON.parse(localStorage.getItem('userData')))
+  },
+  methods: {
+    logout () {
+      console.log('log logout')
+      localStorage.clear()
+      this.$router.replace('/')
+    }
   }
 }
 </script>

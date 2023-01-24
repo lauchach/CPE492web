@@ -10,11 +10,9 @@
             <img src="/img/svg/3.png" alt="" width="400">
           </div>
           <div class="col-md-6">
-            <h3>ระบบเทียบโอนรายวิชาสำหรับนักศึกษา ปวส.</h3>
+            <!-- <h3>ระบบเทียบโอนรายวิชาสำหรับนักศึกษา ปวส.</h3> -->
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur quaerat voluptate iusto? Nihil voluptas vitae veritatis magnam reprehenderit, reiciendis ex? Libero quasi natus veniam voluptatum, voluptas exercitationem ratione consectetur et!
             </p>
-             <button class="btn custom-btn btn-outline-primary mr-4">Browse Products</button>
           </div>
         </div>
       </div>

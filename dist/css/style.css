@@ -12,7 +12,7 @@
 }
 
 html{
-  font-size: 10px;
+  font-size: 16px;
   font-family: "Roboto", sans-serif;
 }
 
@@ -223,7 +223,14 @@ header{
 
 .nav{
   width: 100%;
-  height: 6rem;
+  height: 3rem;
+  line-height: 2rem;
+  position: relative;
+}
+
+.navfix{
+  width: 100%;
+  height: 2rem;
   line-height: 6rem;
   position: relative;
 }
@@ -539,6 +546,12 @@ input[type=text-on-table-ids-rsu]{
   text-align: left;
 }
 
+.print {
+  margin-left: px;
+  height: 1754px;
+  width: 1580px;  
+}
+
 .dropdown-content a:hover {
   background-color: #ddd;
 }
@@ -779,6 +792,7 @@ input[type=text-on-table-ids-rsu]{
   width: 160px;
   margin-left: 520px;
 }
+
 
 
 }

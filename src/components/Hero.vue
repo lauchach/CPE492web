@@ -8,10 +8,10 @@
                   ระบบเทียบโอนรายวิชา
                 </h1>
                 <h4>(สำหรับนักศึกษา ปวส.)</h4>
-                <div class="hero-btn mt-5">
+                <!-- <div class="hero-btn mt-5">
                     <button class="btn custom-btn btn-info mr-4">Explore</button>
                     <button class="btn custom-btn btn-outline-secondary">Products</button>
-                </div>
+                </div> -->
               </div>
             </div>
             <div class="col-md-7">

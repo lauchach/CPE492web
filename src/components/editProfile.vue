@@ -1,7 +1,7 @@
 <template>
-  <div class="login">
+  <div class="editProfile" >
         <!-- Modal -->
-      <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="loginTitle" aria-hidden="true">
+      <div class="modal fade" id="login" role="dialog" aria-labelledby="loginTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-body">
@@ -58,7 +58,7 @@
 <script>
 import { fb } from '../firebase'
 export default {
-  name: 'Login',
+  name: 'editProfile',
   props: {
     msg: String
   },
@@ -72,33 +72,7 @@ export default {
   methods: {
     login () {
       console.log('auth pass')
-      console.log('auth pass')
-        this.$router.replace('Profileviews')
-      // fb.auth().signInWithEmailAndPassword(this.email, this.password)
-      //   .then((email) => {
-      //     const db = fb.firestore()
-      //     db.collection('MEMBER_TABLE').where('student_mail', '==', email.user.email).get().then(userShow => {
-      //       userShow.forEach(doc => {
-      //         console.log(doc.id, '=>', doc.data())
-      //         if (doc.data().type === 'ADMIN') {
-      //           this.$router.replace('admin')
-      //         } else {
-      //           this.$router.replace('Profileviews')
-      //         }
-      //       })
-      //     })
-      //   })
-      //   .catch(function (error) {
-      //     // Handle Errors here.
-      //     var errorCode = error.code
-      //     var errorMessage = error.message
-      //     if (errorCode === 'auth/wrong-password') {
-      //       alert('Wrong password.')
-      //     } else {
-      //       alert(errorMessage)
-      //     }
-      //     console.log(error)
-      //   })
+      this.$router.replace('Profileviews')
     },
     register () {
       fb.auth().createUserWithEmailAndPassword(this.email, this.password)
