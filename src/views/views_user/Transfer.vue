@@ -114,21 +114,17 @@
     </div>
     <div>
     </div>
-    <!-- <button class="btn btn-primary" @click="log">log</button> -->
   </div>
 </template>
 <script>
-// import { fb, getStorage } from '../../firebase'
-import { fb } from '../../firebase'
-import { Config } from '../../config'
-import axios from 'axios'
-// import { getStorage, ref } from '../../firebase/storage'
+import { fb } from '../../firebase' // เรียกใช้งาน fb จาก firebase.js  // เรียกใช้งาน "fb" จาก firebase.js
+import { Config } from '../../config' // เรียกใช้งาน Config จาก Config.js // เรียกใช้งาน "Config" จาก config.js
+import axios from 'axios' // เรียกใช้งาน axios// เรียกใช้งาน "axios"
 
-// @ is an alias to /src
-export default {
+export default { // export หน้า page เพื่อใช้ใน router
   name: 'Transfer',
-  components: {},
-  data () {
+  components: {}, // components ที่เกี่ยวข้องในหน้าเพจนี้},
+  data () { // set data ของหน้าเพจนี้เบื่องต้น
     return {
       data: [],
       counter: 1,
@@ -166,26 +162,21 @@ export default {
       isUpload: false
     }
   },
-  async created () {
-    await this.findStatus()
-    await this.findRecord()
-    await this.getProfile()
+  async created () { // สั่งให้หน้าเพจทำเริ่มทำงานฟังชั่นที่ต้องการ 
+    await this.findStatus() // ฟังชั่น findStatus ให้ทำงาน
+    await this.findStatus() // ฟังชั่น findRecord ให้ทำงาน
+    await this.getProfile() // ฟังชั่น findRecord ให้ทำงาน
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     findRecord () {
       if (this.rsuId) {
         let uri = `${Config.APIURL}${Config.PART.TRANSFERFETCH}`
-        console.log('158', Config.PART.TRANSFERFETCH, {
-          rsuId: this.rsuId
-        })
         axios.post(uri, {
           rsuId: this.rsuId
         }).then(response => {
-          console.log('RESPONSE API TRANSFERFETCH', response)
           if (response.data.status.code === 0) {
             let res = response.data.data.subjects
             if (res.length) this.haveRecord = true
-            console.log('TRANSFERFETCH res', res)
             this.records = res
           } else {
             alert(`${response.data.status.message}`)
@@ -201,12 +192,9 @@ export default {
         axios.post(uri, {
           email: JSON.parse(localStorage.getItem('userData')).email || ''
         }).then(responseLogin => {
-          console.log('RESPONSE API setData', responseLogin)
           if (responseLogin.data.status.code === 0) {
-            // localStorage.setItem('userData', JSON.stringify(responseLogin.data.data))
             let res = responseLogin.data.data
             if (res) {
-              console.log('responseLogin.data.data.status209', responseLogin.data.data.status)
               this.status = responseLogin.data.data.status
             } else {
               alert('มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง')
@@ -215,7 +203,6 @@ export default {
             alert('รหัสผิดพลาด')
           }
         }).catch(err => {
-          // eslint-disable-next-line no-console
           console.log(err)
         })
       }
@@ -226,17 +213,14 @@ export default {
           .where('Subject_id', '==', this.subjectid).get()
           .then(Show => {
             Show.forEach(doc => {
-              console.log('doc.data:', doc.data())
               this.subjectName = doc.data().Subject_Name
               this.subjectCredit = doc.data().Subject_Credit
               if (this.subjectCredit) {
-                console.log('if')
                 this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
                 this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
                 this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
                 this.tagitem[this.tagitem.length - 1].loopSubjectId = []
               } else {
-                console.log('213 else')
               }
             })
           })
@@ -245,7 +229,6 @@ export default {
       }
     },
     async save () {
-      console.log('202save')
       let data = this.data
       if (this.haveRecord) data = [...this.data, ...this.records]
       let uri = `${Config.APIURL}${Config.PART.TRANSFERSAVE}`
@@ -253,52 +236,39 @@ export default {
         email: this.email,
         data: data
       }).then(responseLogin => {
-        console.log('TRANSFERSAVE', responseLogin)
         if (responseLogin.data.status.code === 0) {
           let res = responseLogin.data.data
-          console.log('TRANSFERSAVE res', res)
           alert('ดำเนินการสำเร็จ')
         } else {
           alert(responseLogin.data.status.message)
         }
       }).catch(err => {
         // eslint-disable-next-line no-console
-        console.log(err)
       })
     },
     pushrow () {
       // if (this.tagitem && (this.data.length !== 0)) {
-      console.log('tagitem', this.tagitem)
       this.duplicateSubjectId = false
-      console.log('245this.subjectid', this.subjectid)
       if (this.subjectid !== '') {
         let data = this.records.length ? [...this.data, ...this.records] : this.data
         for (let i = 0; i < data.length; i++) {
-          console.log(data[i].subjectid, '===', this.subjectid)
           if (data[i].subjectid === this.subjectid) {
             this.duplicateSubjectId = true
-            console.log('this.duplicateSubjectId++', this.duplicateSubjectId)
           }
         }
-        console.log('this.duplicateSubjectId', this.duplicateSubjectId)
         if (!this.duplicateSubjectId) {
-          console.log('iffffff this.subjectGrade', this.subjectGrade)
           if (this.subjectGrade !== '') {
             let _data = {
               subjectid: this.subjectid,
               subjectName: this.subjectName,
               subjectGrade: this.subjectGrade,
               subjectCredit: this.subjectCredit
-              // subjectRSUid: this.subjectRSUid,
-              // subjectRSUname: this.subjectRSUname,
-              // subjectRSUCredit: this.subjectRSUCredit
             }
             this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
             this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
             this.tagitem[this.tagitem.length - 1].subjectGrade = this.subjectGrade
             this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
             this.data.push(_data)
-            console.log('this.data>>:', this.data)
             this.subjectid = ''
             this.tagitem.push({
               subjectName: '',
@@ -313,33 +283,6 @@ export default {
       } else {
         alert('กรุณาทำการกรอกรายวิชา และ กดปุ่ม "ตรวจสอบ"')
       }
-      // } else if (this.tagitem && (this.data.length === 0)) {
-      //   if (this.subjectGrade !== '') {
-      //     if (this.subjectGrade !== '') {
-      //       let _data = {
-      //         subjectid: this.subjectid,
-      //         subjectName: this.subjectName,
-      //         subjectGrade: this.subjectGrade,
-      //         subjectCredit: this.subjectCredit
-      //         // subjectRSUid: this.subjectRSUid,
-      //         // subjectRSUname: this.subjectRSUname,
-      //         // subjectRSUCredit: this.subjectRSUCredit
-      //       }
-      //       this.tagitem[this.tagitem.length - 1].subjectGrade = this.subjectGrade
-      //       this.data.push(_data)
-      //       console.log('this.data>>:', this.data)
-      //       this.subjectid = ''
-      //       this.tagitem.push({
-      //         subjectName: '',
-      //         loopSubjectId: []
-      //       })
-      //     } else {
-      //       alert('กรุณาทำการเลือกผลการเรียนก่อนทำการเพิ่มรายวิชาถัดไป')
-      //     }
-      //   } else {
-      //     alert('กรุณาทำการกรอกรายวิชา และ กดปุ่ม "ตรวจสอบ"')
-      //   }
-      // }
     },
     deleteRow (index, isRecord) {
       if (isRecord) this.records = this.records.filter((v, i, a) => (i !== index))
@@ -347,7 +290,6 @@ export default {
         this.tagitem = this.tagitem.filter((v, i, a) => (i !== index))
         this.data = this.data.filter((v, i, a) => (i !== index))
       }
-      console.log('314delete', index, isRecord, this.records.length)
     },
     async editStatus (data) {
       if (!data) alert('ผิดปกติ')
@@ -376,12 +318,10 @@ export default {
           this.upload.image = downloadURL
           this.isUpload = true
           this.uploadImaLink(downloadURL)
-          console.log('346', downloadURL)
         })
       })
     },
     async uploadImaLink (link) {
-      console.log('uploadImaLink')
       if (!link) alert('ผิดปกติ')
       let uri = `${Config.APIURL}${Config.PART.UPLOADIMG}`
       await axios.post(uri, {

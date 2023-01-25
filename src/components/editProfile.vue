@@ -56,7 +56,7 @@
   </div>
 </template>
 <script>
-import { fb } from '../firebase'
+import { fb } from '../firebase' // เรียกใช้งาน fb จาก firebase.js
 export default {
   name: 'editProfile',
   props: {
@@ -69,9 +69,8 @@ export default {
       password: null
     }
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     login () {
-      console.log('auth pass')
       this.$router.replace('Profileviews')
     },
     register () {

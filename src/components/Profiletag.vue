@@ -23,13 +23,13 @@
 
 <script>
 import { Config } from '../config'
-import axios from 'axios'
+import axios from 'axios' // เรียกใช้งาน axios
 export default {
   name: 'Profiletag',
   props: {
     msg: String
   },
-  components: {
+  components: { // components ที่เกี่ยวข้องในหน้าเพจนี้
   },
   data () {
     return {
@@ -39,10 +39,9 @@ export default {
     }
   },
   created () {
-    console.log('--Profiletag-> ', JSON.parse(localStorage.getItem('userData')))
     this.setData()
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     // setData () {
     //   this.rsuid = JSON.parse(localStorage.getItem('userData')).detail.rsuId || ''
     //   this.name = JSON.parse(localStorage.getItem('userData')).studentData.student_name
@@ -52,11 +51,9 @@ export default {
       axios.post(uri, {
         email: JSON.parse(localStorage.getItem('userData')).email || ''
       }).then(responseLogin => {
-        console.log('RESPONSE API setData', responseLogin)
         if (responseLogin.data.status.code === 0) {
           // localStorage.setItem('userData', JSON.stringify(responseLogin.data.data))
           let res = responseLogin.data.data
-          console.log('auth pass res', res)
           if (res) {
             this.email = res.email
             this.nname = res.detail.nname || ''

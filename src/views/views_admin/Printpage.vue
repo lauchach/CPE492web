@@ -37,58 +37,6 @@
                   <div style="margin-left: 20px" class="col-1"></div>
                 </div>
               </div>
-              <!-- <div v-if="cols.length > 0" class="row" style="margin-top: 280px">
-                <div class="col-2">{{ cols[0].subjectid }}</div>
-                <div v-if="cols[2].subjectName.length < 25" style="margin-left: -80px" class="col-3">{{ cols[0].subjectName }}</div>
-                <div v-else style="margin-left: -60px" class="col-3">{{ cols[0].subjectName }}</div>
-                <div v-if="cols[2].subjectName.length < 25" style="margin-left: 40px" class="col-0.5">{{ cols[0].subjectCredit }}</div>
-                <div v-else style="margin-left: 20px" class="col-0.5">{{ cols[0].subjectCredit }}</div>
-                <div style="margin-left: 20px" class="col-1">{{ cols[0].subjectGrade }}</div>
-                <div class="col-0.5">{{ cols[0].rsuSubjecteId }}</div>
-                <div style="margin-left: 0px" class="col-3">{{ cols[0].rsuSubjectName }}</div>
-                <div style="margin-left: -40px" class="col-1">{{ cols[0].rsuSubjectCredit }}</div>
-                <div style="margin-left: 15px" class="col-0.5">{{ cols[0].rsuSubjectGrade }}</div>
-                <div style="margin-left: 20px" class="col-1"></div>
-              </div>
-              <div v-if="cols.length > 1" class="row" style="margin-top: 10px">
-                <div class="col-2">{{ cols[1].subjectid }}</div>
-                <div v-if="cols[2].subjectName.length < 25" style="margin-left: -80px" class="col-3">{{ cols[1].subjectName }}</div>
-                <div v-else style="margin-left: -60px" class="col-3">{{ cols[1].subjectName }}</div>
-                <div v-if="cols[2].subjectName.length < 25" style="margin-left: 40px" class="col-0.5">{{ cols[1].subjectCredit }}</div>
-                <div v-else style="margin-left: 20px" class="col-0.5">{{ cols[1].subjectCredit }}</div>
-                <div style="margin-left: 20px" class="col-1">{{ cols[1].subjectGrade }}</div>
-                <div class="col-0.5">{{ cols[1].rsuSubjecteId }}</div>
-                <div style="margin-left: 0px" class="col-3">{{ cols[1].rsuSubjectName }}</div>
-                <div style="margin-left: -40px" class="col-1">{{ cols[1].rsuSubjectCredit }}</div>
-                <div style="margin-left: 15px" class="col-0.5">{{ cols[1].rsuSubjectGrade }}</div>
-                <div style="margin-left: 20px" class="col-1"></div>
-              </div> -->
-              <!-- <div v-if="cols.length > 2" class="row" style="margin-top: 10px">
-                <div class="col-2">{{ cols[2].subjectid }}</div>
-                <div v-if="cols[2].subjectName.length < 25" style="margin-left: -80px" class="col-3">{{ cols[2].subjectName }}</div>
-                <div v-else style="margin-left: -60px" class="col-3">{{ cols[2].subjectName }}</div>
-                <div v-if="cols[2].subjectName.length < 25" style="margin-left: 40px" class="col-0.5">{{ cols[2].subjectCredit }}</div>
-                <div v-else style="margin-left: 20px" class="col-0.5">{{ cols[2].subjectCredit }}</div>
-                <div style="margin-left: 20px" class="col-1">{{ cols[2].subjectGrade }}</div>
-                <div class="col-0.5">{{ cols[2].rsuSubjecteId }}</div>
-                <div style="margin-left: 0px" class="col-3">{{ cols[2].rsuSubjectName }}</div>
-                <div style="margin-left: -40px" class="col-1">{{ cols[2].rsuSubjectCredit }}</div>
-                <div style="margin-left: 15px" class="col-0.5">{{ cols[2].rsuSubjectGrade }}</div>
-                <div style="margin-left: 20px" class="col-1"></div>
-              </div>
-              <div v-if="cols.length > 3" class="row" style="margin-top: 10px">
-                <div class="col-2">{{ cols[3].subjectid }}</div>
-                <div v-if="cols[2].subjectName.length < 25" style="margin-left: -80px" class="col-3">{{ cols[3].subjectName }}</div>
-                <div v-else style="margin-left: -60px" class="col-3">{{ cols[3].subjectName }}</div>
-                <div v-if="cols[2].subjectName.length < 25" style="margin-left: 40px" class="col-0.5">{{ cols[3].subjectCredit }}</div>
-                <div v-else style="margin-left: 20px" class="col-0.5">{{ cols[3].subjectCredit }}</div>
-                <div style="margin-left: 20px" class="col-1">{{ cols[3].subjectGrade }}</div>
-                <div class="col-0.5">{{ cols[3].rsuSubjecteId }}</div>
-                <div style="margin-left: 0px" class="col-3">{{ cols[3].rsuSubjectName }}</div>
-                <div style="margin-left: -40px" class="col-1">{{ cols[3].rsuSubjectCredit }}</div>
-                <div style="margin-left: 15px" class="col-0.5">{{ cols[3].rsuSubjectGrade }}</div>
-                <div style="margin-left: 20px" class="col-1"></div>
-              </div> -->
             </div>
           </div>
         </div>
@@ -98,8 +46,8 @@
 
 <script>
 // @ is an alias to /src
-import { Config } from '../../config'
-import axios from 'axios'
+import { Config } from '../../config' // เรียกใช้งาน Config จาก Config.js
+import axios from 'axios' // เรียกใช้งาน axios
 export default {
   name: 'Printpage',
   data () {
@@ -109,20 +57,15 @@ export default {
       isPrint: false
     }
   },
-  async created () {
-    console.log('27rsuId', this.rsuId)
-    // console.log('JSON.parse(localStorage.getItem(userData))', JSON.parse(localStorage.getItem('userData')))
-    // this.setData()
-    await this.findRecord()
+  async created () { // สั่งให้หน้าเพจทำเริ่มทำงานฟังชั่นที่ต้องการ
+    await this.findStatus() // ฟังชั่น findRecord ให้ทำงาน
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     findRecord () {
-      console.log('59 ')
       let uri = `${Config.APIURL}${Config.PART.TRANSFERFETCHFULL}`
       axios.post(uri, {
         rsuId: this.rsuId
       }).then(response => {
-        console.log('RESPONSE API TRANSFERRECORDLIST', response)
         if (response.data.status.code === 0) {
           this.cols = response.data.data.cols
         } else {

@@ -88,9 +88,9 @@
 </template>
 
 <script>
-export default {
+export default { // export หน้า page admin เพื่อใช้ใน router
   name: 'admin',
-  components: {
+  components: { // components ที่เกี่ยวข้องในหน้าเพจนี้ // ไม่มี components ที่เกี่ยวข้องในหน้าเพจนี้
   },
   data () {
     return {
@@ -101,11 +101,9 @@ export default {
     }
   },
   created () {
-    console.log('---> ', JSON.parse(localStorage.getItem('userData')))
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     logout () {
-      console.log('log logout')
       localStorage.clear()
       this.$router.replace('/')
     }

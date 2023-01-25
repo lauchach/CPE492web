@@ -113,15 +113,13 @@
 </template>
 
 <script>
-import { Config } from '../../config'
-import axios from 'axios'
-import { fb } from '../../firebase'
-const db = fb.firestore()
+import { Config } from '../../config' // เรียกใช้งาน Config จาก Config.js
+import axios from 'axios' // เรียกใช้งาน axios
+import { fb } from '../../firebase' // เรียกใช้งาน fb จาก firebase.js
+const db = fb.firestore() // กำหนด fb.firestore() ไวในตัวแปล db
 export default {
   name: 'AllProfile',
-  components: {
-    // Tablemembertable,
-    // editProfile
+  components: { // components ที่เกี่ยวข้องในหน้าเพจนี้
   },
   data () {
     return {
@@ -134,16 +132,13 @@ export default {
       status: ''
     }
   },
-  async created () {
-    console.log('144')
+  async created () { // สั่งให้หน้าเพจทำเริ่มทำงานฟังชั่นที่ต้องการ
     await db
       .collection('users')
       .get()
       .then((userShow) => {
         userShow.forEach(async (doc) => {
-          console.log('146', doc.data())
           if (doc.data().type !== 'admin') {
-            console.log('doc.data()', doc.data())
             let data = doc.data()
             this.userlist.push({
               rsuId: data.detail.rsuId || '-',
@@ -155,20 +150,16 @@ export default {
             })
           }
         })
-        console.log('164', this.userlist)
       })
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     async tabEditProfile (data) {
-      console.log('editProfile', data)
       let uri = `${Config.APIURL}${Config.PART.GETPROFILE}`
       await axios.post(uri, {
         email: data.email || ''
       }).then(responseLogin => {
-        console.log('RESPONSE API setData', responseLogin)
         if (responseLogin.data.status.code === 0) {
           let res = responseLogin.data.data
-          console.log('130res', res)
           if (res) {
             this.data.email = res.email
             this.data.nname = res.detail.nname || ''
@@ -189,11 +180,9 @@ export default {
       }).catch(err => {
         console.log(err)
       })
-      console.log('165')
       this.myModel = true
     },
     addDataProfile () {
-      console.log('155', this.data, '>>>', this.status)
       let uri = `${Config.APIURL}${Config.PART.PROFILEUPDATA}`
       const data = {
         email: this.data.email,
@@ -210,10 +199,8 @@ export default {
       }
       if (this.status) data.status = this.status
       axios.post(uri, data).then(response => {
-        console.log('RESPONSE API LOGIN', response)
         if (response.data.status.code === 0) {
           let res = response.data.data
-          console.log('responseRegister res', res)
           alert(`${response.data.status.message}`)
         } else {
           alert(`${response.data.status.message}`)
@@ -232,7 +219,6 @@ export default {
           data.status = 'กรอกข้อมูลประจำตัวเเล้ว'
           break
       }
-      console.log('107data', data)
     },
     generateTextMajor (major) {
       switch (major) {

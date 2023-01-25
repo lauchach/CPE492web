@@ -121,9 +121,9 @@
   </div>
 </template>
 <script>
-// import { fb } from '../firebase'
+// import { fb } from '../firebase' // เรียกใช้งาน fb จาก firebase.js
 import { Config } from '../config'
-import axios from 'axios'
+import axios from 'axios' // เรียกใช้งาน axios
 
 export default {
   name: 'Login',
@@ -139,20 +139,17 @@ export default {
       password_2: ''
     }
   },
-  async created () {},
-  methods: {
+  async created () {}, // สั่งให้หน้าเพจทำเริ่มทำงานฟังชั่นที่ต้องการ},
+  methods: { // ''// methods ของหน้าเพจ"
     async login () {
       let uri = `${Config.APIURL}${Config.PART.LOGIN}`
-      console.log('login', `${Config.APIURL}${Config.PART.LOGIN}`)
       axios.post(uri, {
         email: this.email,
         password: this.password
       }).then(responseLogin => {
-        console.log('RESPONSE API LOGIN', responseLogin)
         if (responseLogin.data.status.code === 0) {
           localStorage.setItem('userData', JSON.stringify(responseLogin.data.data))
           let res = responseLogin.data.data
-          console.log('auth pass res', res)
           if (res.type) {
             if (res.type === 'admin' || res.type === 'deputyDean') {
               if (res.type === 'deputyDean') this.$router.replace('admin/overview')
@@ -180,11 +177,9 @@ export default {
           password_2: this.password_2,
           type: 'student'
         }).then(responseRegister => {
-          console.log('RESPONSE API LOGIN', responseRegister)
           if (responseRegister.data.status.code === 0) {
             localStorage.setItem('userData', JSON.stringify(responseRegister.data.data))
             let res = responseRegister.data.data
-            console.log('responseRegister res', res)
             alert('สมัครสมาชิกสำเร็จ')
           } else {
             alert(`${responseRegister.data.status.message}`)
