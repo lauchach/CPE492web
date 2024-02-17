@@ -94,11 +94,11 @@
   </div>
 </template>
 <script>
-import { fb } from '../../firebase'
+import { fb } from '../../firebase' // เรียกใช้งาน fb จาก firebase.js
 // @ is an alias to /src
 export default {
   name: 'Transfer1',
-  components: {},
+  components: {}, // components ที่เกี่ยวข้องในหน้าเพจนี้},
   data () {
     return {
       data: [
@@ -129,7 +129,7 @@ export default {
       ]
     }
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     addRow () {
       let modelData = {
         id: '',
@@ -138,23 +138,15 @@ export default {
       this.data.push(modelData)
     },
     saveData () {
-      console.log('data : ', this.data)
     },
     mapping () {
-      console.log('this.subjectid', this.subjectid)
-      // console.log(true)
-      const db = fb.firestore()
+      const db = fb.firestore() // กำหนด fb.firestore() ไวในตัวแปล db
       db.collection('MAPPIN_TABLE').where('subject', 'array-contains', this.subjectid).get().then(Show => {
         Show.forEach(doc => {
-          // console.log(doc.id, '=>', doc.data())
-          // console.log(doc.id)
           this.subjectRSUid = doc.id
-          // console.log(this.subjectRSUid)
         })
         db.collection('SUBJECT_RSU_TABLE').where('Subject_id', '==', this.subjectRSUid).get().then(Show => {
           Show.forEach(doc => {
-          // console.log(doc.id, '=>', doc.data())
-          // console.log('Subject_Name:', doc.data())
             this.subjectRSUname = doc.data().Subject_Name
             this.subjectRSUCredit = doc.data().Subject_Credit
           })
@@ -164,12 +156,9 @@ export default {
           .get()
           .then(Show => {
             Show.forEach(doc => {
-              // console.log(doc.id, '=>', doc.data())
-              console.log('doc.data:', doc.data())
               this.subjectName = doc.data().Subject_Name
               this.subjectCredit = doc.data().Subject_Credit
               if (this.subjectCredit === this.subjectRSUid) {
-                console.log('if')
                 this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
                 this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
                 this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
@@ -178,7 +167,6 @@ export default {
                 this.tagitem[this.tagitem.length - 1].subjectRSUCredit = this.subjectRSUCredit
                 this.tagitem[this.tagitem.length - 1].loopSubjectId = []
               } else {
-                console.log('else')
                 alert('else')
                 this.loopSubjectId = this.subjectid
                 this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
@@ -188,9 +176,7 @@ export default {
                 this.tagitem[this.tagitem.length - 1].subjectRSUname = this.subjectRSUname
                 this.tagitem[this.tagitem.length - 1].subjectRSUCredit = this.subjectRSUCredit
                 this.tagitem[this.tagitem.length - 1].loopSubjectId = []
-                // console.log(this.tagitem)
                 this.tagitem.push({
-                  // subjectid: '',
                   subjectName: '',
                   subjectCredit: '',
                   subjectRSUid: '',
@@ -198,20 +184,18 @@ export default {
                   subjectRSUCredit: '',
                   loopSubjectId: []
                 })
-                const db = fb.firestore()
+                const db = fb.firestore() // กำหนด fb.firestore() ไวในตัวแปล db
                 db.collection('MAPPIN_TABLE').where('subject2plus1', 'array-contains', this.loopSubjectId).get().then(Show => {
                   Show.forEach(doc => {
                     this.tagitem[this.tagitem.length - 1].loopSubjectId = doc.data().subject2plus1
                   })
                 })
-                console.log('tagitem', this.tagitem)
               }
             })
           })
       })
     },
     save () {
-      console.log('save')
     },
     pushrow () {
       this.subjectid = ''

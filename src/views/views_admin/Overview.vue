@@ -254,9 +254,9 @@
   </div>
 </template>
 <script>
-import { Config } from '../../config'
+import { Config } from '../../config' // เรียกใช้งาน Config จาก Config.js
 import { generateTextMajor } from '../../helper'
-import axios from 'axios'
+import axios from 'axios' // เรียกใช้งาน axios
 export default {
   name: 'Overview',
   props: {
@@ -278,21 +278,18 @@ export default {
       }
     }
   },
-  async created () {
-    await this.findRecord()
+  async created () { // สั่งให้หน้าเพจทำเริ่มทำงานฟังชั่นที่ต้องการ
+    await this.findStatus() // ฟังชั่น findRecord ให้ทำงาน
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     findRecord () {
-      console.log('59 ')
       let uri = `${Config.APIURL}${Config.PART.TRANSFERRECORDLIST}`
       axios.post(uri, {}).then(response => {
-        console.log('RESPONSE API TRANSFERRECORDLIST', response)
         if (response.data.status.code === 0) {
           let res = response.data.data
           for (let i = 0; i < res.length; i++) {
             res[i].detail.major = generateTextMajor(res[i].detail.major)
           }
-          console.log('TRANSFERRECORDLIST res', res)
           this.transferList = res
         } else {
           alert(`${response.data.status.message}`)
@@ -326,9 +323,7 @@ export default {
           })
         }
       })
-      console.log('79viewRecord', data.subjects)
       data.subjects = await data.subjects.filter(v => {
-        console.log('v.status', v.status)
         if (!v.status) return true
         else if (v.status && v.status === 'APPROVE') return false
         else return true
@@ -348,11 +343,6 @@ export default {
       }).then(response => {
         if (response.data.status.code === 0) {
           let res = response.data.data
-          // "rsuSubject": {
-          //   "subjectRSUid": "RSU160",
-          //   "subjectRSUName": "รู้เท่าทันสื่อดิจิทัล",
-          //   "subjectRSUCredit": "3"
-          // }
           data.rsu = res
           this.stacks = [...this.stacks, data]
         } else {
@@ -363,7 +353,6 @@ export default {
       })
     },
     unStack (data) {
-      console.log('204data', data.rsu.isHave)
       if (data.rsu.isMore && data.rsu.isHave) data.rsu.isHave = false
       this.stacks = this.stacks.filter(v => (v.subjectid !== data.subjectid))
       this.records = [...this.records, data]
@@ -380,16 +369,13 @@ export default {
     },
     async saveStack () {
       if (this.isOpentViewRecord) {
-        console.log('saveStack', Config.PART.TRANSFERRSUSAVE, 'this.viewUser', this.viewUser)
         let uri = `${Config.APIURL}${Config.PART.TRANSFERRSUSAVE}`
         await axios.post(uri, {
           rsuId: this.viewUser.rsuId,
           records: this.stacks
         }).then(response => {
-          console.log('RESPONSE API TRANSFERRSUSAVE', response)
           if (response.data.status.code === 0) {
             let res = response.data.data
-            console.log('TRANSFERRSUSAVE res', res)
             this.transferList = res
             alert('ดำเนินการสำเร็จ')
           } else {
@@ -409,7 +395,6 @@ export default {
       }).then(response => {
         if (response.data.status.code === 0) {
           let res = response.data.data
-          console.log('252res', res)
           this.approves = [...this.approves, data]
           this.stacks = this.stacks.filter(v => v.subjectid !== data.subjectid)
         } else {
@@ -420,7 +405,6 @@ export default {
       })
     },
     async unApprove (data) {
-      console.log('353data', data)
       if (!data.subjectid) alert('ผิดปกติ')
       let uri = `${Config.APIURL}${Config.PART.TRANSFERSUBJECTUNAPPROVE}`
       await axios.post(uri, {
@@ -429,7 +413,6 @@ export default {
       }).then(response => {
         if (response.data.status.code === 0) {
           // let res = response.data.data
-          console.log('361res', this.approves.filter(v => v.subjectid !== data.subjectid))
           this.approves = this.approves.filter(v => v.subjectid !== data.subjectid)
           this.records = [...this.records, data]
         } else {
@@ -440,7 +423,6 @@ export default {
       })
     },
     async editStatus (data) {
-      console.log('403data', data)
       if (!data) alert('ผิดปกติ')
       let uri = `${Config.APIURL}${Config.PART.EDITSTATUS}`
       await axios.post(uri, {
@@ -448,10 +430,6 @@ export default {
         status: this.viewUser.status
       }).then(response => {
         if (response.data.status.code === 0) {
-          // let res = response.data.data
-          // console.log('361res', this.approves.filter(v => v.subjectid !== data.subjectid))
-          // this.approves = this.approves.filter(v => v.subjectid !== data.subjectid)
-          // this.records = [...this.records, data]
         } else {
           alert(`${response.data.status.message}`)
         }
@@ -467,20 +445,17 @@ export default {
       this.isOpentViewRecord = false
       this.isViewUpload = false
       this.upload = { img: '' }
-      await this.findRecord()
+      await this.findStatus() // ฟังชั่น findRecord ให้ทำงาน
     },
     async printTo (data) {
-      console.log('440', data)
       localStorage.setItem('printData', JSON.stringify(data.rsuId))
       this.$router.replace('/Printpage')
     },
     async uploadImaGetLink () {
-      console.log('uploadImaGetLink')
       let uri = `${Config.APIURL}${Config.PART.GETIMGLINK}`
       await axios.post(uri, { rsuId: this.viewUser.rsuId }).then(response => {
         if (response.data.status.code === 0) {
           this.upload.img = response.data.data.linkImg
-          console.log('455', this.upload.img)
         } else {
           alert(`${response.data.status.message}`)
         }

@@ -40,7 +40,7 @@ export default {
   props: {
     msg: String
   },
-  components: {},
+  components: {}, // components ที่เกี่ยวข้องในหน้าเพจนี้},
   data () {
     return {
       data: [],
@@ -48,12 +48,9 @@ export default {
       type: JSON.parse(localStorage.getItem('userData')).type
     }
   },
-  async created () {
-    console.log('NAVEBAR', JSON.parse(localStorage.getItem('userData')))
-  },
-  methods: {
+  async created () {}, // สั่งให้หน้าเพจทำเริ่มทำงานฟังชั่นที่ต้องการ
+  methods: { // ''// methods ของหน้าเพจ"
     logout () {
-      console.log('log logout')
       localStorage.clear()
       this.$router.replace('/')
     }

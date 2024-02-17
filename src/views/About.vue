@@ -31,7 +31,7 @@ import Hero from '@/components/Hero.vue'
 import Login from '@/components/Login.vue'
 export default {
   name: 'About',
-  components: {
+  components: { // components ที่เกี่ยวข้องในหน้าเพจนี้
     Hero, Login
   }
 }

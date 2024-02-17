@@ -76,9 +76,9 @@
   </table>
 </template>
 <script>
-import { fb } from '../firebase'
+import { fb } from '../firebase' // เรียกใช้งาน fb จาก firebase.js
 import bootstrap from 'bootstrap'
-const db = fb.firestore()
+const db = fb.firestore() // กำหนด fb.firestore() ไวในตัวแปล db
 // const table = document.querySelector('tbuser')
 export default {
   name: 'Tablemembertable',
@@ -91,29 +91,14 @@ export default {
       myModel: false
     }
   },
-  async created () {
-    console.log('144')
+  async created () { // สั่งให้หน้าเพจทำเริ่มทำงานฟังชั่นที่ต้องการ
     await db
       .collection('users')
       .get()
       .then((userShow) => {
         userShow.forEach(async (doc) => {
-          console.log('146', doc.data())
           if (doc.data().type !== 'admin') {
-            console.log('doc.data()', doc.data())
             let data = doc.data()
-            // this.userlist = [...this.userlist, {
-            //   rsuid: doc.data().rsuid,
-            //   name: doc.data().studentData.student_name,
-            //   major: doc.data().studentData.student_major,
-            //   status: doc.data().rsuid
-            // }]
-            console.log({
-              rsuId: data.detail.rsuId || '-',
-              name: data.detail.name || '-',
-              major: await this.generateTextMajor(data.detail.major),
-              status: data.status || '-'
-            })
             this.userlist.push({
               rsuId: data.detail.rsuId || '-',
               name: data.detail.name || '-',
@@ -122,12 +107,10 @@ export default {
             })
           }
         })
-        console.log('164', this.userlist)
       })
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     openModel () {
-      console.log('openModel')
       this.first_name = ''
       this.last_name = ''
       this.actionButton = 'Insert'
@@ -135,14 +118,10 @@ export default {
       this.myModel = true
     },
     editProfile (data) {
-      console.log('editProfile', data)
-      // $('#staticBackdrop').modal('show')
       const myModalAlternative = new bootstrap.Modal('#staticBackdrop', {
         show: 0,
         hide: 150
       })
-      console.log('>>>')
-      console.log(myModalAlternative, '.....')
       document.onreadystatechange = function () {
         myModalAlternative.show()
       }
@@ -156,7 +135,6 @@ export default {
           data.status = 'กรอกข้อมูลประจำตัวเเล้ว'
           break
       }
-      console.log('107data', data)
     },
     generateTextMajor (major) {
       switch (major) {
@@ -171,24 +149,4 @@ export default {
     }
   }
 }
-
-// created:
-//     db.collection('MEMBER_TABLE').get().then(userShow => {
-//       userShow.forEach(doc => {
-//         console.log(doc.id, '=>', doc.data())
-//         showData(doc.data())
-//       })
-//     })
-// }
-// function showData (doc) {
-//   var row = table.inserRow(-1)
-//   var cell1 = row.insreCell(0)
-//   var cell2 = row.insreCell(1)
-//   var cell3 = row.insreCell(2)
-//   var cell4 = row.insreCell(3)
-//   cell1.innerHTML = doc.data().rsuid
-//   cell2.innerHTML = doc.data().name
-//   cell3.innerHTML = doc.data().email
-//   cell4.innerHTML = doc.data().email
-// }
 </script>

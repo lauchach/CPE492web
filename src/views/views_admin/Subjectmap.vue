@@ -99,18 +99,10 @@
                       </tr>
                     </thead>
                     <tbody v-for="(item, i) in records" :key="i">
-                      <!-- <tr v-if="!isSelectToEdit"> -->
                         <td>{{item.Subject_id}}</td>
                         <td><button class="btn btn-primary" @click="selectToEdit(item)">แก้ไข</button></td>
                         <td>{{item.Subject_Name}}</td>
                         <td>{{item.Subject_Credit}}</td>
-                      <!-- </tr> -->
-                      <!-- <tr v-else>
-                        <td>{{item.Subject_id}}</td>
-                        <td><button class="btn btn-primary" @click="selectToEdit(item)">บันทึก</button></td>
-                        <td>{{item.Subject_Name}}</td>
-                        <td>{{item.Subject_Credit}}</td>
-                      </tr> -->
                     </tbody>
                   </table>
                 </div>
@@ -120,7 +112,6 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="clear()">ปิด</button>
-                <!-- <button type="button" class="btn btn-primary"  @click='saveStack()'>บันทึก</button> -->
               </div>
             </div>
           </div>
@@ -129,8 +120,8 @@
     </div>
 </template>
 <script>
-import { Config } from '../../config'
-import axios from 'axios'
+import { Config } from '../../config' // เรียกใช้งาน Config จาก Config.js
+import axios from 'axios' // เรียกใช้งาน axios
 export default {
   name: 'Subjectmap',
   data () {
@@ -142,29 +133,23 @@ export default {
       selectItem: {}
     }
   },
-  async created () {
-    await this.findStatus()
+  async created () { // สั่งให้หน้าเพจทำเริ่มทำงานฟังชั่นที่ต้องการ
+    await this.findStatus() // ฟังชั่น findStatus ให้ทำงาน
   },
-  methods: {
+  methods: { // ''// methods ของหน้าเพจ"
     async view (isRSU) {
       this.isView = true
-      console.log('58')
       await this.fetchSubjectList(isRSU)
     },
     async selectToEdit (data) {
       this.isSelectToEdit = true
-      console.log('114', data)
       this.selectItem = data
     },
     fetchSubjectList (isRSU) {
       let uri = !isRSU ? `${Config.APIURL}${Config.PART.SUBJECTLIST}` : `${Config.APIURL}${Config.PART.SUBJECTRSULIST}`
-      console.log('158', Config.PART.SUBJECTLIST, {
-      })
       axios.post(uri, {}).then(response => {
-        console.log('RESPONSE API SUBJECTLIST', response)
         if (response.data.status.code === 0) {
           let res = response.data.data
-          console.log('SUBJECTLIST res', res)
           this.records = res
         } else {
           alert(`${response.data.status.message}`)
@@ -174,38 +159,27 @@ export default {
       })
     },
     pushrow () {
-      // if (this.tagitem && (this.data.length !== 0)) {
-      console.log('tagitem', this.tagitem)
       this.duplicateSubjectId = false
-      console.log('245this.subjectid', this.subjectid)
       if (this.subjectid !== '') {
         let data = this.records.length ? [...this.data, ...this.records] : this.data
         for (let i = 0; i < data.length; i++) {
-          console.log(data[i].subjectid, '===', this.subjectid)
           if (data[i].subjectid === this.subjectid) {
             this.duplicateSubjectId = true
-            console.log('this.duplicateSubjectId++', this.duplicateSubjectId)
           }
         }
-        console.log('this.duplicateSubjectId', this.duplicateSubjectId)
         if (!this.duplicateSubjectId) {
-          console.log('iffffff this.subjectGrade', this.subjectGrade)
           if (this.subjectGrade !== '') {
             let _data = {
               subjectid: this.subjectid,
               subjectName: this.subjectName,
               subjectGrade: this.subjectGrade,
               subjectCredit: this.subjectCredit
-              // subjectRSUid: this.subjectRSUid,
-              // subjectRSUname: this.subjectRSUname,
-              // subjectRSUCredit: this.subjectRSUCredit
             }
             this.tagitem[this.tagitem.length - 1].subjectid = this.subjectid
             this.tagitem[this.tagitem.length - 1].subjectName = this.subjectName
             this.tagitem[this.tagitem.length - 1].subjectGrade = this.subjectGrade
             this.tagitem[this.tagitem.length - 1].subjectCredit = this.subjectCredit
             this.data.push(_data)
-            console.log('this.data>>:', this.data)
             this.subjectid = ''
             this.tagitem.push({
               subjectName: '',
@@ -220,33 +194,6 @@ export default {
       } else {
         alert('กรุณาทำการกรอกรายวิชา และ กดปุ่ม "ตรวจสอบ"')
       }
-      // } else if (this.tagitem && (this.data.length === 0)) {
-      //   if (this.subjectGrade !== '') {
-      //     if (this.subjectGrade !== '') {
-      //       let _data = {
-      //         subjectid: this.subjectid,
-      //         subjectName: this.subjectName,
-      //         subjectGrade: this.subjectGrade,
-      //         subjectCredit: this.subjectCredit
-      //         // subjectRSUid: this.subjectRSUid,
-      //         // subjectRSUname: this.subjectRSUname,
-      //         // subjectRSUCredit: this.subjectRSUCredit
-      //       }
-      //       this.tagitem[this.tagitem.length - 1].subjectGrade = this.subjectGrade
-      //       this.data.push(_data)
-      //       console.log('this.data>>:', this.data)
-      //       this.subjectid = ''
-      //       this.tagitem.push({
-      //         subjectName: '',
-      //         loopSubjectId: []
-      //       })
-      //     } else {
-      //       alert('กรุณาทำการเลือกผลการเรียนก่อนทำการเพิ่มรายวิชาถัดไป')
-      //     }
-      //   } else {
-      //     alert('กรุณาทำการกรอกรายวิชา และ กดปุ่ม "ตรวจสอบ"')
-      //   }
-      // }
     },
     clear () {
       this.isView = false

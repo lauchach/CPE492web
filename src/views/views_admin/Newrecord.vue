@@ -9,7 +9,6 @@
 export default {
   name: 'Newrecord',
   created () {
-    console.log(111)
   }
 }
 </script>
